@@ -2,7 +2,7 @@
 
   <!-- Execution du noeuds qui réccupère les données du robot -->
   <node pkg="robot" name="serial_reader" type="serialCon.py" output="screen">
-    <param name="motor_controller_port" type="str" value="/dev/ttyACM0" />
+    <param name="motor_controller_port" value="/dev/ttyACM0" />
   </node>
 
   <!-- Execution du noeud qui calcul la vitesse instantanée des encodeurs -->

@@ -163,6 +163,8 @@ catkin_install_python(PROGRAMS
   scripts/serialCon.py
   scripts/kalman.py
   scripts/consign.py
+  scripts/sonar.py
+  scripts/valServer.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
