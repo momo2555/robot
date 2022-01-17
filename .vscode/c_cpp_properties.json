@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/momo/valrob2/devel/include/**",
+        "/home/momo/valrob/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/momo/valrob2/src/driver_common/driver_base/include/**",
+        "/home/momo/valrob2/src/hokuyo_node/include/**",
+        "/home/momo/valrob2/src/laser_proc/include/**",
+        "/home/momo/valrob/src/openslam_gmapping/include/**",
+        "/home/momo/valrob2/src/robot/include/**",
+        "/home/momo/valrob2/src/robot_ui/include/**",
+        "/home/momo/valrob2/src/driver_common/timestamp_tools/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

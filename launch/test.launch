@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="robot" name="serial_reader" type="serialCon.py" output="screen">
+    </node>
+</launch>
