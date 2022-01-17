@@ -10,7 +10,7 @@ import time
 
     
 
-
+#position thread
 class getPosThread(Thread):
     def __init__(self, serial):
         Thread.__init__(self)
