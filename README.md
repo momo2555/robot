@@ -1,6 +1,6 @@
 # Package ROS pour le robot du club robotique de l'INSA Hauts-de-France
 Ce package contient tous les drivers et les scripts de contrôle pour faire fonctionner le robot de l'association. 
-## Cintenu du package
+## Contenu du package
 1. driver pour la carte moteur
 La carte moteur est une carte développée par Valrobotique qui permet de contrôler la base roulante du robot. Cette carte 
 d'une part permet d'envoyer des commandes aux moteurs en plus de les asservir grâce à un correcteur RST, d'autre part elle
@@ -16,7 +16,7 @@ Interface visuelle de contrôle pour gérer le robot
 pour utiliser le package ROS de Valrobotik il est nécessaire d'installer les package suivant dans votre catkin_workspace
 1. Le package robot_localization
 Ce package permet de filtrer et de fusionner les données de position du robot:
-[Lien](https://github.com/cra-ros-pkg/robot_localization "repository Github de robot_localization")
+[repository Github de robot_localization](https://github.com/cra-ros-pkg/robot_localization "repository Github de robot_localization")
 
 2. Le package hokuyo_node 
 Ce package est le driver du Lidar Laser utilisé sur la robot. En effet en cas de changement de modèle de Lidar il suffit
