@@ -12,7 +12,7 @@ sous forme de chaîne de caractère Gcode. le microcontrôleur utilisée sur cet
 3. Robot user interface
 Interface visuelle de contrôle pour gérer le robot
 4. Serveur de gestion du robot à distance
-### Packages annexes
+## Packages annexes
 pour utiliser le package ROS de Valrobotik il est nécessaire d'installer les package suivant dans votre catkin_workspace
 1. Le package robot_localization
 Ce package permet de filtrer et de fusionner les données de position du robot:
