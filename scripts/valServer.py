@@ -16,32 +16,33 @@ position = {
 async def echo(websocket):
     async for message in websocket:
         print(message)
-        pos = {
+        req = {
+            "type" : "position"
             "position" : position
         }
-        print(son.dumps(pos))
-        await websocket.send(son.dumps(pos))
+        print(son.dumps(req))
+        await websocket.send(son.dumps(req))
 
 async def main():
     #run the server
-    async with websockets.serve(echo, "localhost", 3223):
-        await asyncio.Future()  # run forever
+    print("initialisation du serveur websocket")
+    server = websockets.serve(echo, "localhost", 3223)
 
     
 async def rosInit():
-    print("je passe par là")
+    print("initialisation noeud serialCon")
     rospy.init_node('serialCon')
     #init Ros node
-    print("je passe par là 2")
-    rospy.Subscriber("enc_velocity", Odometry, getRobotpos)
-    rospy.spin()
-    
+    print("initialisation du subscriber")
+    rospy.Subscriber("enc_velocity", Odometry, getRobotPos)
+    await rospy.spin()
+
 def getRobotPos(pos):
-    position.x = pos.pose.pose.x
-    position.y = pos.pose.pose.y
-    position.th = math.atan2(math. pos.pose.orientation.z, pos.pose.orientation.w)
-    print(position)
+    position["x"] = pos.pose.pose.position.x
+    position["y"] = pos.pose.pose.position.y
+    position["th"] = math.atan2(pos.pose.pose.orientation.z, pos.pose.pose.orientation.w)
+    #print(position)   
 
 
-print("avant le main")
 asyncio.run(main())
+asyncio.run(rosInit())
