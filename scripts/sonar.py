@@ -15,7 +15,6 @@ from tf2_ros.buffer_interface import Stamped
 import yaml
 
 def transform(d,x,y,th) :
-    #
     X=np.array([[d/1000],[0],[0]])
     B=np.array([[x/1000],[y/1000],[0]])
     R=np.array([[np.cos(th),-np.sin(th),0],
@@ -69,6 +68,7 @@ while 1:
         points.append(Point32(obstacle[0],obstacle[1],obstacle[2]))
         dIndex+=1
     #print(points)
+    points.pop()
     cloud=PointCloud()
     cloud.header.stamp=stamp
     cloud.header.frame_id='odom'
