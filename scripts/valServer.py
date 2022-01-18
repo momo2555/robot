@@ -7,9 +7,9 @@ import json
 from nav_msgs.msg import Odometry
 
 position = {
-    x: 0,
-    y: 0,
-    th: 0
+    "x": 0,
+    "y": 0,
+    "th": 0
 } #x,y, theta
 
 
@@ -17,7 +17,7 @@ async def echo(websocket):
     async for message in websocket:
         print(message)
         pos = {
-            position : position
+            "position" : position
         }
         print(son.dumps(pos))
         await websocket.send(son.dumps(pos))
@@ -27,16 +27,21 @@ async def main():
     async with websockets.serve(echo, "localhost", 3223):
         await asyncio.Future()  # run forever
 
+    
+async def rosInit():
+    print("je passe par là")
+    rospy.init_node('serialCon')
     #init Ros node
-
+    print("je passe par là 2")
     rospy.Subscriber("enc_velocity", Odometry, getRobotpos)
     rospy.spin()
-
+    
 def getRobotPos(pos):
     position.x = pos.pose.pose.x
     position.y = pos.pose.pose.y
     position.th = math.atan2(math. pos.pose.orientation.z, pos.pose.orientation.w)
+    print(position)
 
 
-
+print("avant le main")
 asyncio.run(main())
