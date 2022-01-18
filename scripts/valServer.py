@@ -5,44 +5,36 @@ import websockets
 import math
 import json
 from nav_msgs.msg import Odometry
-
-position = {
-    "x": 0,
-    "y": 0,
-    "th": 0
-} #x, y, theta
+import socket
+from threading import Thread
 
 
-async def echo(websocket):
-    async for message in websocket:
-        print(message)
-        req = {
-            "type" : "position"
-            "position" : position
-        }
-        print(son.dumps(req))
-        await websocket.send(son.dumps(req))
+class ServerSocket(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.__server  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__server.bind(("localhost", 32233))
+        self.__server.listen(1)
+        self.__clients = []
+        
+    def run(self):
+        print("démarrage du serveur")
+        while(True):
+            client, clientAddress = self.__server.accept()
+            self.__clients.append(ClientProcess(client))
+            self.__clients[-1].start()       
 
-async def main():
-    #run the server
-    print("initialisation du serveur websocket")
-    server = websockets.serve(echo, "localhost", 3223)
+class ClientProcess(Thread):
+    def __init__(self, client):
+        Thread.__init__(self)
+        self.__client = client
+    def run(self):
+        print("nouveau client connecté")
+        while True:
+            response = self.__client.recv(1024)
+            print(response)
+            self.__client.send(b"ok")
+print(socket.gethostname())
+server = ServerSocket()
+server.start()
 
-    
-async def rosInit():
-    print("initialisation noeud serialCon")
-    rospy.init_node('serialCon')
-    #init Ros node
-    print("initialisation du subscriber")
-    rospy.Subscriber("enc_velocity", Odometry, getRobotPos)
-    await rospy.spin()
-
-def getRobotPos(pos):
-    position["x"] = pos.pose.pose.position.x
-    position["y"] = pos.pose.pose.position.y
-    position["th"] = math.atan2(pos.pose.pose.orientation.z, pos.pose.pose.orientation.w)
-    #print(position)   
-
-
-asyncio.run(main())
-asyncio.run(rosInit())

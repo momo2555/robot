@@ -7,10 +7,11 @@ from threading import Thread
 from geometry_msgs.msg import PoseStamped
 import re
 import asyncio
-import websockets
+import websocket
 import json
 import math
-
+import time
+import socket
 """ root = Tk()
 width = 400
 heigh = 400
@@ -79,7 +80,8 @@ class MainWin(Tk):
 		
 
 	def robotGetData(self):
-		self.__client.onReceive(self.__robot.setFromServer)
+		#self.__client.onReceive(self.__robot.setFromServer)
+		pass
 	
 
 class Bouton(Button):
@@ -264,24 +266,38 @@ class Robot():
 		pass
 class ClientSocket(Thread):
 	def __init__(self):
-		#initialisation du client websocket
-		
+		self.__client =socket.socket(
+    				socket.AF_INET, socket.SOCK_STREAM)
 		self.__callbacks = []
+		#initialisation du client websocket
 		Thread.__init__(self)
+		
+		
 	
-	async def run(self):
-		self.__client = websockets.connect("ws://localhost:3223")
-		while(True):
-			msg = await self.__client.recv()
-			for callback in self.__callbacks:
-				callback(msg)
 
+	def run(self):
+		self.__client.connect(('localhost', 32233))
+		print("démarrage du client")
+		while True:
+			response = self.__client.recv(1024)
+			print(response)
+			#fetch callbacks
+			for callback in self.__callbacks:
+				callback(response)
+		
+	def sendMsg(self, msg):
+		self.__client.send(b"ok")
 	def onReceive(self, callback):
 		self.__callbacks.append(callback)
-		pass
-print("Création du client")
+	
+
+
+
 client = ClientSocket()
-client.run()
+client.start()
+
+
+
 
 print("lancement de l'interface graphique")
 mainWin = MainWin(client)
