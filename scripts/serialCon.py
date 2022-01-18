@@ -102,8 +102,10 @@ class Verif(Thread):
         self.__serial = ser
     def run(self):
         pass
-        
+   
 serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM0")
+
+print(serial.__file__)
 ser = MotSerial(serialName)
 
 #execution server position
