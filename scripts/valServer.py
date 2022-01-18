@@ -10,7 +10,7 @@ position = {
     "x": 0,
     "y": 0,
     "th": 0
-} #x,y, theta
+} #x, y, theta
 
 
 async def echo(websocket):
