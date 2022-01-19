@@ -32,7 +32,7 @@ frame **laser**
 
 3. Le package hector_slam
 
-##Bibilothèques python utilisées
+## Bibilothèques python utilisées
 1. matplotlib, numpy, math et re
 2. pyserial
 3. tkinter
