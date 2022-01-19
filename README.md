@@ -6,7 +6,7 @@ Ce package contient tous les drivers et les scripts de contrôle pour faire fonc
 1. driver pour la carte moteur
 - La carte moteur est une carte développée par Valrobotique qui permet de contrôler la base roulante du robot. Cette carte 
 d'une part permet d'envoyer des commandes aux moteurs en plus de les asservir grâce à un correcteur RST, d'autre part elle
-permet de lire les encodeurs et envoyé leur valeur au port série. cette carte contient un microcontrôleur de type STM32 F303K8.
+permet de lire les encodeurs et envoyer leur valeur au port série. cette carte contient un microcontrôleur de type STM32 F303K8.
 
 2. driver pour la carte ultrasonic
 - La carte ultrasonic est une carte développée par Valrobotique qui permet de cartographiée l'environnement du robot avec des 
