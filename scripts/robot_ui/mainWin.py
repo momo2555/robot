@@ -2,6 +2,9 @@ from tkinter import *
 from clientThread import *
 from robot import Robot
 from field import Field
+from clientThread import serverMsg
+
+
 
 class MainWin(Tk):
 	def __init__(self,client, w=1000, h=800):
@@ -41,6 +44,19 @@ class MainWin(Tk):
 		pan.add(toptSide)
 		pan.add(bottomtSide)
 
+		#bouton pour commencer l'essai en boucle ouverte
+		startOpenLoopButton = Button (rightSide, text = "Test en boucle ouverte")
+		startOpenLoopButton.pack()
+		startOpenLoopButton.bind('<Button-1>', self.startOpenLoop)
+
+		monitorRobot = Button(rightSide, text = "Enregistrer les données du robot")
+		monitorRobot.pack()
+		monitorRobot.bind('<Button-1>', self.beginMonitor)
+
+		showCurbs = Button(rightSide, text = "Voir les courbes")
+		showCurbs.pack()
+		showCurbs.bind('<Button-1>', self.showCurbs)
+
 		self.__field = Field(leftSide)
 		self.__field.pack(padx=10, pady=10, fill=BOTH, expand=1)
 		#self.__field.grid(column=1, row=1, sticky="new")
@@ -55,4 +71,18 @@ class MainWin(Tk):
 
 	def robotGetData(self):
 		self.__client.onReceive(self.__robot.setFromServer)
+		pass
+
+	def startOpenLoop(self, e):
+		print("open loop")
+		rqt = serverMsg()
+		rqt.setRequest("start_open_loop")
+		self.__client.sendMsg(rqt.toObject())
+	
+	def showCurbs(self, e):
+		self.__robot.showCurb()
+		pass
+
+	def beginMonitor(self, e):
+		self.__robot.initCurb()
 		pass

@@ -53,7 +53,7 @@ class ClientSocket(Thread):
 		print("démarrage du client")
 		while True:
 			response = self.__client.recv(1024)
-			print(response)
+			
 			#fetch callbacks
 			for callback in self.__callbacks:
 				callback(json.loads(response.decode('utf8')))
