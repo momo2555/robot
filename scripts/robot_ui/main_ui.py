@@ -38,8 +38,9 @@ class MainWin(Tk):
 		self.__client = client
 		self.setSize(w, h)
 		self.setInterface()
-		
-		
+		#initialisation du thread de réccupération de la position
+		self.__getInterfacePos = GetPositionThread()
+		self.__getInterfacePos.start()
 		
 		
 	def setSize(self, w, h):
@@ -80,7 +81,7 @@ class MainWin(Tk):
 		
 
 	def robotGetData(self):
-		#self.__client.onReceive(self.__robot.setFromServer)
+		self.__client.onReceive(self.__robot.setFromServer)
 		pass
 	
 
@@ -256,7 +257,6 @@ class Robot():
 
 	def setFromServer(self, data):
 		print(data)
-		data = json.loads(data)
 		if(data["type"]=="position"):
 			self.__x = data["position"]["x"]*100
 			self.__y = data["position"]["y"]*100
@@ -264,6 +264,38 @@ class Robot():
 			#redessiner e terrain (la fonction de dessin du robot sera appeler automatiquement)
 			self.__field.drawLandMark()
 		pass
+
+class GetPositionThread(Thread):
+	def __init__(self):
+		Thread.__init__(self)
+	
+	def run(self):
+		print("start position getter thread")
+		while True:
+			#create a new request
+			rqt = serverMsg()
+			rqt.setRequest("get_position")
+			#send request
+			client.sendMsg(rqt.toObject())
+			time.sleep(0.1)
+
+
+class serverMsg():
+	def __init__(self):
+		self.__type = "request"
+		self.__request = "none"
+	def setRequest(self, request):
+		self.__request = request
+		self.__type = "request"
+
+	def toObject(self):
+		return {
+			"type" : self.__type,
+			"request" : self.__request
+		}
+	def toString(self):
+		return json.dumps( self.toObject() )
+
 class ClientSocket(Thread):
 	def __init__(self):
 		self.__client =socket.socket(
@@ -283,10 +315,10 @@ class ClientSocket(Thread):
 			print(response)
 			#fetch callbacks
 			for callback in self.__callbacks:
-				callback(response)
+				callback(json.loads(response.decode('utf8')))
 		
-	def sendMsg(self, msg):
-		self.__client.send(b"ok")
+	def sendMsg(self, objMsg):
+		self.__client.send(json.dumps( objMsg ).encode('utf8'))
 	def onReceive(self, callback):
 		self.__callbacks.append(callback)
 	
