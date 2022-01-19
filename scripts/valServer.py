@@ -67,8 +67,8 @@ class RobotCom():
     def setPosition(self, posOdom):
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
-        cos = posOdom.pose.pose.orientation.w
-        sin = posOdom.pose.pose.orientation.z
+        sin = posOdom.pose.pose.orientation.w
+        cos = posOdom.pose.pose.orientation.z
         self.__position["th"] = math.atan2(sin, cos)
     def getPosition(self):
         return self.__position
