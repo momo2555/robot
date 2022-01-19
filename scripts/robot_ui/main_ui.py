@@ -319,6 +319,7 @@ class ClientSocket(Thread):
 		
 	def sendMsg(self, objMsg):
 		self.__client.send(json.dumps( objMsg ).encode('utf8'))
+		
 	def onReceive(self, callback):
 		self.__callbacks.append(callback)
 	
