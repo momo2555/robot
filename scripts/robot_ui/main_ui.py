@@ -308,7 +308,7 @@ class ClientSocket(Thread):
 	
 
 	def run(self):
-		self.__client.connect(('localhost', 32233))
+		self.__client.connect(('192.168.236.11', 32233))
 		print("démarrage du client")
 		while True:
 			response = self.__client.recv(1024)
