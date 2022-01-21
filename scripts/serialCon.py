@@ -63,28 +63,40 @@ class setPosConsignThread(Thread):
         rospy.spin()
 
     def getConsign(self, cons):
-        print(cons)
-        sended = False
-        time.sleep(0.01)
-        while not sended:
-            print(self.__serial.busy())
-            if (not self.__serial.busy()):
-                self.__serial.setBusy() #---------
-                time.sleep(0.02)
-                print("moteurs: envoie => ")
-                if cons.angular.z == 0:
-                    gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
-                elif cons.angular.z == 1:
-                    gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
-                self.__serial.write(gcode.encode("utf8"))
-                print(gcode)
-                sended = True
-                print("moteurs: fin <= ")
-                self.__serial.setUnbusy()#---------
-            time.sleep(0.01)
-        print("outwhile")
+        gcode = ""
+        if cons.angular.z == 0:
+            gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
+        elif cons.angular.z == 1:
+            gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
+        self.__serial.send(gcode)        
+       
 
-        pass 
+
+class requestMotorThread(Thread):
+    def __init__(self, serial):
+        Thread.__init__(self)
+        self.__serial = serial
+
+    def run(self):
+        rospy.Subscriber("motor_request", String, self.sendReq)
+        rospy.spin()
+
+    def sendReq(self, req):
+        #conversion en objet
+        req = json.loads(req.data)
+        gcode = ""
+        if(req["type"] == "motor_request"):
+            if(req["request"] == "set_pid_left"):
+                gcode = "M301 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
+            if(req["request"] == "set_pid_left"):
+                gcode = "M302 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
+        self.__serial.send(gcode)  
+        #enregistrement
+        self.__serial.send("M400 \n")     
+          
+    
+
+
 
 class MotSerial(serial.Serial):
     def __init__(self, serialName):
@@ -96,6 +108,15 @@ class MotSerial(serial.Serial):
         self.__serialBusy = False
     def setBusy(self):
         self.__serialBusy = True
+    def sendGcode(gcode):
+        sended = False
+        while not sended:
+            if (not self.busy()):
+                self.setBusy() #---------
+                time.sleep(0.01)
+                self.write(gcode.encode("utf8"))
+                sended = True
+                self.setUnbusy()#---------
 
 class Verif(Thread):
     def __init__(self, ser):

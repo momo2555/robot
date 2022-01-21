@@ -12,7 +12,7 @@ def getreq(req):
         if(data["request"]=="start_open_loop"):
             OpenLoop().start()
             pass
-        elif(data["request"]=="start_open_loop"):
+        elif(data["request"]=="start_diff_speed"):
             DiffSpeed().start()
     pass
 class OpenLoop(Thread):
@@ -31,7 +31,7 @@ class OpenLoop(Thread):
         #arrêter le rbot
         consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)
-class DiffSpeed(thread):
+class DiffSpeed(Thread):
     def __init__(self):
         Thread.__init__(self)
     def run(self):
@@ -40,7 +40,7 @@ class DiffSpeed(thread):
         consPub.publish(consignToSend)
         time.sleep(8)
         #arret
-        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 1))
+        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)
 
 

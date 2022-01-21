@@ -40,6 +40,7 @@ class ClientProcess(Thread):
     def processRequest(self, msg):
         try:
             data = json.loads(msg.decode('utf8'))
+            #si on reçoit une requêtte (un oprocess à éxecuter sur le robot)
             if data["type"] == "request":
                 if data["request"] == "get_position":
                     #send the response
@@ -52,9 +53,15 @@ class ClientProcess(Thread):
                     }
                     
                     self.send(response)
-                if data["request"] == "start_open_loop":
+                elif data["request"] == "start_open_loop":
                     print(msg)
-                    robotCos.publish(msg.decode('utf8'))
+                    robotCons.publish(msg.decode('utf8'))
+                elif data["request"] == "start_diff_speed":
+                    robotCons.publish(msg.decode('utf8'))
+            #si on reçoit une rerquêtte moteur (des changement à faire sur la carte moteur)
+            elif data["type"] == "motor_request":
+                motorReq.publish(msg)
+                pass
         except Exception:
             pass
     def send(self, objMsg):
@@ -86,6 +93,8 @@ class RobotCom():
             "left" : 0,
             "right" : 0
         }
+        
+
     def setPosition(self, posOdom):
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
@@ -96,6 +105,7 @@ class RobotCom():
     def setVelocity(self, diffVel):
         self.__DiffVelocity["left"] = diffVel.linear.x
         self.__DiffVelocity["right"] = diffVel.linear.y
+
 
     def getVelocity(self):
         return self.__DiffVelocity
@@ -120,4 +130,5 @@ robot = RobotCom()
 rosnode = RosNode()
 rosnode.start()
 #ros publishers
-robotCos = rospy.Publisher('server_req', String, queue_size=10)
+robotCons = rospy.Publisher('server_req', String, queue_size=10)
+motorReq = rospy.Publisher('motor_request', String, queue_size=10)
