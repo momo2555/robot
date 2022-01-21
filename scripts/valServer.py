@@ -3,9 +3,11 @@ import rospy
 import asyncio
 import websockets
 import math
+from std_msgs.msg import String
 import json
 from nav_msgs.msg import Odometry
 import socket
+from geometry_msgs.msg import Twist, Vector3
 from threading import Thread
 
 
@@ -36,25 +38,37 @@ class ClientProcess(Thread):
             self.processRequest(response)
             
     def processRequest(self, msg):
-        data = json.loads(msg.decode('utf8'))
-        if data["type"] == "request":
-            if data["request"] == "get_position":
-                #send the response
-                
-                response = {
-                    "type" : "position",
-                    "position" : robot.getPosition()
-                }
-                
-                self.send(response)
+        try:
+            data = json.loads(msg.decode('utf8'))
+            if data["type"] == "request":
+                if data["request"] == "get_position":
+                    #send the response
+                    
+                    response = {
+                        "type" : "position",
+                        "position" : robot.getPosition(),
+                        "diffSpeed" : robot.getVelocity(),
+                        "cons" : robot.getCons()
+                    }
+                    
+                    self.send(response)
+                if data["request"] == "start_open_loop":
+                    print(msg)
+                    robotCos.publish(msg.decode('utf8'))
+        except Exception:
+            pass
     def send(self, objMsg):
         self.__client.send( json.dumps(objMsg).encode('utf8') )
 class RosNode(Thread):
     def __init__(self):
+
         Thread.__init__(self)
         rospy.init_node("val_server")
     def run(self):
+        print("Initialisation des subscribers")
         rospy.Subscriber("enc_velocity", Odometry, robot.setPosition)
+        rospy.Subscriber("robot_consign", Twist, robot.setCons)
+        rospy.Subscriber("diff_velocity", Twist, robot.setVelocity)
         rospy.spin()
     
 class RobotCom():
@@ -64,14 +78,38 @@ class RobotCom():
             "y" : 0,
             "z" : 0
         }
+        self.__DiffVelocity = {
+            "left" : 0,
+            "right" : 0
+        }
+        self.__cons = {
+            "left" : 0,
+            "right" : 0
+        }
     def setPosition(self, posOdom):
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
         sin = posOdom.pose.pose.orientation.w
         cos = posOdom.pose.pose.orientation.z
         self.__position["th"] = math.atan2(sin, cos)
+
+    def setVelocity(self, diffVel):
+        self.__DiffVelocity["left"] = diffVel.linear.x
+        self.__DiffVelocity["right"] = diffVel.linear.y
+
+    def getVelocity(self):
+        return self.__DiffVelocity
+
     def getPosition(self):
         return self.__position
+
+    def setCons(self, consTwist):
+        self.__cons["left"] = consTwist.linear.x
+        self.__cons["right"] = consTwist.linear.y
+    
+    def getCons(self):
+        return self.__cons
+
 print(socket.gethostname())
 #start server
 server = ServerSocket()
@@ -81,3 +119,5 @@ robot = RobotCom()
 #start rosnode and subscriber
 rosnode = RosNode()
 rosnode.start()
+#ros publishers
+robotCos = rospy.Publisher('server_req', String, queue_size=10)

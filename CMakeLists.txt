@@ -166,6 +166,7 @@ catkin_install_python(PROGRAMS
   scripts/sonar.py
   scripts/valServer.py
   scripts/robot_ui/main_ui.py
+  scripts/valServer.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
