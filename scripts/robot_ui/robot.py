@@ -112,5 +112,11 @@ class Robot():
 		plt.plot(self.__T, self.__Cr)
 		plt.plot(self.__T, self.__Vr)
 		plt.show()
-		
+		#ecrire dans un fichier le résultat
+		f = open("courbe-" + str(self.__cid) + ".csv", "w")
+		self.__cid+=1
+		for i in range(len(self.__T)):
+			f.write(str(self.__T[i]) + "," + str(self.__Cl[i]) + "," + str(self.__Cr[i]) + "," 
+			+ str(self.__Vl[i]) + "," + str(self.__Vr[i]))
+		f.close()
 		pass
