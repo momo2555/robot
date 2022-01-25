@@ -3,14 +3,15 @@ from clientThread import *
 from robot import Robot
 from field import Field
 from clientThread import serverMsg
-
+from motorProp import MotorProp
+from testAsserv import TestAsserv
 
 
 class MainWin(Tk):
 	def __init__(self,client, w=1000, h=800):
 		Tk.__init__(self)
 		self.__height = h
-		self.__width = w
+		self.__width  = w
 		self.__client = client
 		self.setSize(w, h)
 		self.setInterface()
@@ -45,17 +46,22 @@ class MainWin(Tk):
 		pan.add(bottomtSide)
 
 		#bouton pour commencer l'essai en boucle ouverte
-		startOpenLoopButton = Button (rightSide, text = "Test en boucle ouverte")
+		startOpenLoopButton = Button (rightSide, text = "Tester l'asservissement du robot")
 		startOpenLoopButton.pack()
-		startOpenLoopButton.bind('<Button-1>', self.startOpenLoop)
+		startOpenLoopButton.bind('<Button-1>', self.showAsservTest)
 
-		monitorRobot = Button(rightSide, text = "Enregistrer les données du robot")
+
+		monitorRobot = Button(rightSide, text = "Débuter l'enregistrement")
 		monitorRobot.pack()
 		monitorRobot.bind('<Button-1>', self.beginMonitor)
 
-		showCurbs = Button(rightSide, text = "Voir les courbes")
+		showCurbs = Button(rightSide, text = "Gestionnaire des courbes")
 		showCurbs.pack()
 		showCurbs.bind('<Button-1>', self.showCurbs)
+
+		openMotorProp = Button(rightSide, text = "Propriétés de la carte motor")
+		openMotorProp.pack()
+		openMotorProp.bind('<Button-1>', self.showMotorProp)
 
 		self.__field = Field(leftSide)
 		self.__field.pack(padx=10, pady=10, fill=BOTH, expand=1)
@@ -73,11 +79,6 @@ class MainWin(Tk):
 		self.__client.onReceive(self.__robot.setFromServer)
 		pass
 
-	def startOpenLoop(self, e):
-		print("open loop")
-		rqt = serverMsg()
-		rqt.setRequest("start_open_loop")
-		self.__client.sendMsg(rqt.toObject())
 	
 	def showCurbs(self, e):
 		self.__robot.showCurb()
@@ -86,3 +87,10 @@ class MainWin(Tk):
 	def beginMonitor(self, e):
 		self.__robot.initCurb()
 		pass
+	
+
+	def showMotorProp(self, e):
+		MotorProp(Toplevel(self), self.__client)
+	
+	def showAsservTest(self, e):
+		TestAsserv(Toplevel(self), self.__client)

@@ -25,18 +25,28 @@ class serverMsg():
 	def __init__(self):
 		self.__type = "request"
 		self.__request = "none"
+		self.__params = []
+
 	def setRequest(self, request):
 		self.__request = request
 		self.__type = "request"
 
+	def setMotorrequest(self, request):
+		self.__request = request
+		self.__type = "motor_request"
+
 	def toObject(self):
-		return {
+		result=  {
 			"type" : self.__type,
 			"request" : self.__request
 		}
+		for param in self.__params:
+			result[param[0]] = param[1]
+		return result
 	def toString(self):
 		return json.dumps( self.toObject() )
-
+	def addParam(self, name, value):
+		self.__params.append([name, value])
 class ClientSocket(Thread):
 	def __init__(self):
 		self.__client =socket.socket(

@@ -117,6 +117,6 @@ class Robot():
 		self.__cid+=1
 		for i in range(len(self.__T)):
 			f.write(str(self.__T[i]) + "," + str(self.__Cl[i]) + "," + str(self.__Cr[i]) + "," 
-			+ str(self.__Vl[i]) + "," + str(self.__Vr[i]))
+			+ str(self.__Vl[i]) + "," + str(self.__Vr[i]) + "\n")
 		f.close()
 		pass
