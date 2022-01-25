@@ -60,7 +60,8 @@ class ClientProcess(Thread):
                     robotCons.publish(msg.decode('utf8'))
             #si on reçoit une rerquêtte moteur (des changement à faire sur la carte moteur)
             elif data["type"] == "motor_request":
-                motorReq.publish(msg)
+                #print("publish")
+                robotCons.publish(msg.decode('utf8'))
                 pass
         except Exception:
             pass
@@ -114,10 +115,7 @@ class RobotCom():
         return self.__position
 
     def setCons(self, consTwist):
-        self.__cons["left"] = consTwist.linear.x
-        self.__cons["right"] = consTwist.linear.y
-    
-    def getCons(self):
+        self.__cons["left"] = consTwist.linear.xmotorReq
         return self.__cons
 
 print(socket.gethostname())
@@ -131,4 +129,4 @@ rosnode = RosNode()
 rosnode.start()
 #ros publishers
 robotCons = rospy.Publisher('server_req', String, queue_size=10)
-motorReq = rospy.Publisher('motor_request', String, queue_size=10)
+#motorReq = rospy.Publisher('motor_request', String, queue_size=10)

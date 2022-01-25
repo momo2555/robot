@@ -113,13 +113,13 @@ class kalmanProcess():
 def velocityPublisher(x, y, th, v, w, t, vl, vr):
     if not rospy.is_shutdown():
         odomQuat = quaternion_from_euler(0, 0, th)
-        odomBroadcaster.sendTransform(
+        """odomBroadcaster.sendTransform(
             (x, y, 0),
             odomQuat,
             t,
             "base_link",
             "odom"
-        )
+        )"""
         message = Odometry()
         message.header.stamp = t
         message.header.frame_id = "odom"

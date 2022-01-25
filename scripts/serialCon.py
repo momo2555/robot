@@ -7,6 +7,7 @@ from threading import Thread
 from geometry_msgs.msg import Twist, Vector3
 import sys
 import time
+from std_msgs.msg import String
 
     
 
@@ -25,7 +26,7 @@ class getPosThread(Thread):
         sr ="enc=(-1;-1)"
         if (not self.__serial.busy()):
             self.__serial.setBusy() #---------
-            print("encodeurs: envoie => ")
+            #print("encodeurs: envoie => ")
             getit = True
             #envoie de la commande
             self.__serial.write(b"M404 \n")
@@ -41,7 +42,7 @@ class getPosThread(Thread):
                     if i >2:
                         getit = False
                         sr = "enc=(-1;-1)"
-            print("encodeurs: fin <= ")
+            #print("encodeurs: fin <= ")
             self.__serial.setUnbusy()#---------
                     
         return sr
@@ -68,7 +69,7 @@ class setPosConsignThread(Thread):
             gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
         elif cons.angular.z == 1:
             gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
-        self.__serial.send(gcode)        
+        self.__serial.sendGcode(gcode)        
        
 
 
@@ -78,23 +79,29 @@ class requestMotorThread(Thread):
         self.__serial = serial
 
     def run(self):
-        rospy.Subscriber("motor_request", String, self.sendReq)
+        
+        rospy.Subscriber("server_req", String, self.sendReq)
         rospy.spin()
 
     def sendReq(self, req):
+        print(req)
         #conversion en objet
-        req = json.loads(req.data)
-        gcode = ""
-        if(req["type"] == "motor_request"):
-            if(req["request"] == "set_pid_left"):
-                gcode = "M301 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
-            if(req["request"] == "set_pid_left"):
-                gcode = "M302 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
-        self.__serial.send(gcode)  
-        #enregistrement
-        self.__serial.send("M400 \n")     
-          
-    
+        try:
+            req = json.loads(req.data)
+       
+        
+            gcode = ""
+            if(req["type"] == "motor_request"):
+                if(req["request"] == "set_pid_left"):
+                    gcode = "M301 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
+                if(req["request"] == "set_pid_right"):
+                    gcode = "M302 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
+            print(gcode)
+            self.__serial.sendGcode(gcode)  
+            #enregistrement
+            self.__serial.sendGcode("M400 \n")     
+        except Exception:
+            pass
 
 
 
@@ -108,7 +115,7 @@ class MotSerial(serial.Serial):
         self.__serialBusy = False
     def setBusy(self):
         self.__serialBusy = True
-    def sendGcode(gcode):
+    def sendGcode(self, gcode):
         sended = False
         while not sended:
             if (not self.busy()):
@@ -118,13 +125,7 @@ class MotSerial(serial.Serial):
                 sended = True
                 self.setUnbusy()#---------
 
-class Verif(Thread):
-    def __init__(self, ser):
-        Thread.__init__(self)
-        self.__serial = ser
-    def run(self):
-        pass
-   
+
 serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM0")
 
 print(serial.__file__)
@@ -138,9 +139,10 @@ posServer.start()
 
 consServer = setPosConsignThread(ser)
 consServer.start()
+#server motor request
+reqServer = requestMotorThread(ser)
+reqServer.start()
 
-verif = Verif(ser)
-verif.start()
 """print("'out' to exit")
 while 1:
     strIn = input('cmd: ')
