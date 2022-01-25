@@ -9,7 +9,6 @@ from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 import tf
 import sys
 import math
-
 from tf.transformations import quaternion_from_euler
 
 #lecture fichier de config
@@ -32,7 +31,6 @@ class kalmanProcess():
         self.__maxTicks = 65535
         self.__maxSafeTicks = 500
             
-        return
     def start(self):
         
         self.__lastTime = rospy.Time.now()
@@ -62,7 +60,7 @@ class kalmanProcess():
                     #envoie des données pour la position estimée
                     velocityPublisher(self.__position[0], self.__position[1], self.__position[2], 
                                         self.__localVelocity[0], self.__localVelocity[1],
-                                        self.__currentTime)
+                                        self.__currentTime, self.__encDiffSpeed[0], self.__encDiffSpeed[1])
                     pass
                 #print("dt={0:.2f}; th={1:.2f}; x={2:.2f}; y={3:.2f}".format(dt, self.__position[2], self.__position[0], self.__position[1]))
                 
@@ -112,7 +110,7 @@ class kalmanProcess():
         a = math.fmod(x, 2*math.pi)
         return a
         
-def velocityPublisher(x, y, th, v, w, t):
+def velocityPublisher(x, y, th, v, w, t, vl, vr):
     if not rospy.is_shutdown():
         odomQuat = quaternion_from_euler(0, 0, th)
         odomBroadcaster.sendTransform(
@@ -133,6 +131,8 @@ def velocityPublisher(x, y, th, v, w, t):
 
         odomPub.publish(message)
 
+        diffMsg = Twist(Vector3(vl, vr, 0), Vector3(0, 0, 0))
+        diffVelPub.publish(diffMsg)
     pass
 
 def encoders_client():
@@ -146,6 +146,7 @@ if __name__ == "__main__":
     #initialisation du noeud
     rospy.init_node("kalman", anonymous=False)
     odomPub = rospy.Publisher("enc_velocity", Odometry, queue_size=10)
+    diffVelPub = rospy.Publisher("diff_velocity", Twist, queue_size=10)
     #initialtisation du tf
     odomBroadcaster = tf.TransformBroadcaster()
     #filtre de kalman

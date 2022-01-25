@@ -72,11 +72,12 @@ class setPosConsignThread(Thread):
                 self.__serial.setBusy() #---------
                 time.sleep(0.02)
                 print("moteurs: envoie => ")
-                gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
-                print(gcode)
-                x = cons.linear.x
-                y = cons.linear.y
+                if cons.angular.z == 0:
+                    gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
+                elif cons.angular.z == 1:
+                    gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
                 self.__serial.write(gcode.encode("utf8"))
+                print(gcode)
                 sended = True
                 print("moteurs: fin <= ")
                 self.__serial.setUnbusy()#---------
