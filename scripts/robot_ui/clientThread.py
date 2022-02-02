@@ -42,11 +42,14 @@ class serverMsg():
 		}
 		for param in self.__params:
 			result[param[0]] = param[1]
+		print(result)
 		return result
 	def toString(self):
 		return json.dumps( self.toObject() )
 	def addParam(self, name, value):
 		self.__params.append([name, value])
+
+
 class ClientSocket(Thread):
 	def __init__(self):
 		self.__client =socket.socket(
@@ -59,16 +62,16 @@ class ClientSocket(Thread):
 	
 
 	def run(self):
-		self.__client.connect(('192.168.236.11', 32233))
+		self.__client.connect(('192.168.25.11', 32233))
 		print("démarrage du client")
 		while True:
 			response = self.__client.recv(1024)
-			
 			#fetch callbacks
 			for callback in self.__callbacks:
 				callback(json.loads(response.decode('utf8')))
 		
 	def sendMsg(self, objMsg):
 		self.__client.send(json.dumps( objMsg ).encode('utf8'))
+		time.sleep(0.05)
 	def onReceive(self, callback):
 		self.__callbacks.append(callback)

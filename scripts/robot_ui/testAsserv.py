@@ -37,7 +37,7 @@ class TestAsserv():
 
         diffSpeedLabel = Label(DiffSpeedFrame, text="Boucle fermée : ")
         diffSpeedLabel.grid(row=1, columnspan=2, column=1, sticky="we", pady=5, padx=5)
-        durationLabel = Label(DiffSpeedFrame, text="Temps d'éxecution")
+        durationLabel = Label(DiffSpeedFrame, text="Temps d'éxecution :")
         durationLabel.grid(row=2, columnspan=1, column=1, sticky="we", pady=5, padx=5)
 
         self.__durationSpinbox = Spinbox(DiffSpeedFrame, format="%.3f", increment=0.01 )
@@ -47,9 +47,19 @@ class TestAsserv():
         durationSecondLabel = Label(DiffSpeedFrame, text="s")
         durationSecondLabel.grid(row=2, column=3, sticky="we", pady=5, padx=5)
 
+  
+        speedLabel = Label(DiffSpeedFrame, text="Vitesse :")
+        speedLabel.grid(row=3, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+        self.__speedSpinbox = Spinbox(DiffSpeedFrame, format="%.3f", increment=0.01 )
+        self.__speedSpinbox.grid(row=3, column=2, sticky="we", pady=5, padx=5 )
+        
+        speedSecondLabel = Label(DiffSpeedFrame, text="m/s")
+        speedSecondLabel.grid(row=3, column=3, sticky="we", pady=5, padx=5)
+
         diffSpeedButton = Button(DiffSpeedFrame, text="Lancer le test ! ")
         diffSpeedButton.bind('<Button-1>', self.startDiffSpeed)
-        diffSpeedButton.grid(row = 3, column=1, columnspan=2, sticky="we", pady=5, padx=5)
+        diffSpeedButton.grid(row = 4, column=1, columnspan=2, sticky="we", pady=5, padx=5)
 
        
         pass
@@ -71,4 +81,5 @@ class TestAsserv():
         rqt = serverMsg()
         rqt.setRequest("start_diff_speed")
         rqt.addParam("duration", float(self.__durationSpinbox.get()))
+        rqt.addParam("v", float(self.__speedSpinbox.get()))
         self.__client.sendMsg(rqt.toObject())
