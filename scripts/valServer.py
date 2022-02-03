@@ -15,7 +15,7 @@ class ServerSocket(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.__server  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__server.bind(("192.168.236.11", 32233))
+        self.__server.bind(("192.168.25.11", 32233))
         self.__server.listen(1)
         self.__clients = []
         
@@ -34,7 +34,7 @@ class ClientProcess(Thread):
         print("nouveau client connecté")
         while True:
             response = self.__client.recv(1024)
-            print(response)
+            
             self.processRequest(response)
             
     def processRequest(self, msg):
@@ -60,13 +60,14 @@ class ClientProcess(Thread):
                     robotCons.publish(msg.decode('utf8'))
             #si on reçoit une rerquêtte moteur (des changement à faire sur la carte moteur)
             elif data["type"] == "motor_request":
-                #print("publish")
+                
                 robotCons.publish(msg.decode('utf8'))
                 pass
         except Exception:
             pass
     def send(self, objMsg):
         self.__client.send( json.dumps(objMsg).encode('utf8') )
+        
 class RosNode(Thread):
     def __init__(self):
 
@@ -97,11 +98,12 @@ class RobotCom():
         
 
     def setPosition(self, posOdom):
+        #print(posOdom)
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
         sin = posOdom.pose.pose.orientation.w
         cos = posOdom.pose.pose.orientation.z
-        self.__position["th"] = math.atan2(sin, cos)
+        self.__position["th"] = math.atan2(sin, cos)*2
 
     def setVelocity(self, diffVel):
         self.__DiffVelocity["left"] = diffVel.linear.x
@@ -113,10 +115,11 @@ class RobotCom():
 
     def getPosition(self):
         return self.__position
-
-    def setCons(self, consTwist):
-        self.__cons["left"] = consTwist.linear.xmotorReq
+    def getCons(self):
         return self.__cons
+    def setCons(self, cons):
+        self.__cons["left"] = cons.linear.x
+        self.__cons["right"] = cons.linear.y
 
 print(socket.gethostname())
 #start server

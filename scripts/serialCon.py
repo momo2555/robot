@@ -51,7 +51,7 @@ class getPosThread(Thread):
         #on renvoie le position du client
         strData = self.getPosition()
         data = strData.replace('enc=(', '').replace(')', '').split(';')
-        return encodersResponse(int(data[0]),int(data[1]))  
+        return encodersResponse(float(data[0]),float(data[1]))  
 
 
 class setPosConsignThread(Thread):
@@ -84,7 +84,7 @@ class requestMotorThread(Thread):
         rospy.spin()
 
     def sendReq(self, req):
-        print(req)
+        
         #conversion en objet
         try:
             req = json.loads(req.data)
@@ -94,9 +94,12 @@ class requestMotorThread(Thread):
             if(req["type"] == "motor_request"):
                 if(req["request"] == "set_pid_left"):
                     gcode = "M301 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
-                if(req["request"] == "set_pid_right"):
+                elif(req["request"] == "set_pid_right"):
                     gcode = "M302 P{0:.3f} I{1:.3f} D{2:.3f} \n".format(req["p"], req["i"], req["d"])
-            print(gcode)
+                elif(req["request"] == "set_power_k"):
+                    gcode = "M323 I{0:.3f} J{1:.3f} \n".format(req["l"], req["r"])
+                elif(req["request"] == "set_measure_k"):
+                    gcode = "M324 I{0:.3f} J{1:.3f} \n".format(req["l"], req["r"])
             self.__serial.sendGcode(gcode)  
             #enregistrement
             self.__serial.sendGcode("M400 \n")     
@@ -122,9 +125,32 @@ class MotSerial(serial.Serial):
                 self.setBusy() #---------
                 time.sleep(0.01)
                 self.write(gcode.encode("utf8"))
+                print(gcode)
                 sended = True
                 self.setUnbusy()#---------
-
+    def sendWithResponse(self, gcode):
+        if (not self.busy()):
+            self.setBusy() #---------
+            getit = True
+            #envoie de la commande
+            self.write(gcode.encode("utf8"))
+            
+            #reccuperation de la valeur des encodeurs
+            i = 0
+            while getit:
+            
+                    by = self.readline()
+                    sr=by.decode('utf-8')
+                    getit = not "enc="in sr #a finir
+                    i+=1
+                    if i >2:
+                        getit = False
+                        sr = "response_failed"
+            #print("encodeurs: fin <= ")
+            self.setUnbusy()#---------
+                    
+        return sr
+        pass
 
 serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM0")
 
