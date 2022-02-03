@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time 
-
+from curb import Curb
 class Robot():
 	def __init__(self, field, x = 0, y = 0,th = 0.7):
 		#le robot va être dessiné sur un canvas
@@ -23,16 +23,7 @@ class Robot():
 		self.__field.bind("<<FieldChanged>>", self.fieldChange)
 		self.__diffSpeed = [0, 0]
 		self.__cons = [0, 0]
-
-		self.__T = []
-		self.__Xx = []
-		self.__Xy = []
-		self.__Vl = []
-		self.__Vr = []
-		self.__Cl = []
-		self.__Cr = []
-		self.__cid = 0
-		self.__time = time.time()
+		self.__curb = Curb()
 		
 	def drawRobot(self):
 		#rapport de reduction
@@ -82,41 +73,14 @@ class Robot():
 			self.__field.drawLandMark()
 			
 			#enregistrement des données
-			self.__T.append(time.time() - self.__time )
-			self.__Xx.append(self.__x)
-			self.__Xy.append(self.__y)
-			self.__Vl.append(self.__diffSpeed[0])
-			self.__Vr.append(self.__diffSpeed[1])
-			self.__Cl.append(self.__cons[0])
-			self.__Cr.append(self.__cons[1])
-
+			if self.__curb.ifMonitoring():
+				
+				self.__curb.addT(time.time(), True) #true -> soustrait le temps par rapport au temps de référence
+				self.__curb.addX(self.__x, self.__y)
+				self.__curb.addV(self.__diffSpeed[0], self.__diffSpeed[1])
+				self.__curb.addC(self.__cons[0], self.__cons[1])
 
 		pass
 
-	def initCurb(self):
-		self.__time = time.time()
-		self.__T = []
-		self.__Xx = []
-		self.__Xy = []
-		self.__Vl = []
-		self.__Vr = []
-		self.__Cl = []
-		self.__Cr = []
-
-	def showCurb(self):
-		fig = plt.figure()
-		fig.add_subplot(121)
-		plt.plot(self.__T, self.__Cl)
-		plt.plot(self.__T, self.__Vl)
-		fig.add_subplot(122)
-		plt.plot(self.__T, self.__Cr)
-		plt.plot(self.__T, self.__Vr)
-		plt.show()
-		#ecrire dans un fichier le résultat
-		f = open("courbe-" + str(self.__cid) + ".csv", "w")
-		self.__cid+=1
-		for i in range(len(self.__T)):
-			f.write(str(self.__T[i]) + "," + str(self.__Cl[i]) + "," + str(self.__Cr[i]) + "," 
-			+ str(self.__Vl[i]) + "," + str(self.__Vr[i]) + "\n")
-		f.close()
-		pass
+	def setCurb(self, curb: Curb):
+		self.__curb = curb

@@ -4,6 +4,7 @@ from robot import Robot
 from field import Field
 from clientThread import serverMsg
 from motorProp import MotorProp
+from curbGes import CurbGes
 from testAsserv import TestAsserv
 
 
@@ -50,14 +51,9 @@ class MainWin(Tk):
 		startOpenLoopButton.pack()
 		startOpenLoopButton.bind('<Button-1>', self.showAsservTest)
 
-
-		monitorRobot = Button(rightSide, text = "Débuter l'enregistrement")
-		monitorRobot.pack()
-		monitorRobot.bind('<Button-1>', self.beginMonitor)
-
 		showCurbs = Button(rightSide, text = "Gestionnaire des courbes")
 		showCurbs.pack()
-		showCurbs.bind('<Button-1>', self.showCurbs)
+		showCurbs.bind('<Button-1>', self.showCurbGes)
 
 		openMotorProp = Button(rightSide, text = "Propriétés de la carte motor")
 		openMotorProp.pack()
@@ -94,3 +90,9 @@ class MainWin(Tk):
 	
 	def showAsservTest(self, e):
 		TestAsserv(Toplevel(self), self.__client)
+	def showCurbGes(self, e):
+		CurbGes(Toplevel(self), self.__client, self)
+
+	
+	def startCurbMonitoring(self, curb):
+		self.__robot.setCurb(curb)
