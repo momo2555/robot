@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <include file="$(find robot)/launch/lidar.launch"/> <!--Configuration et lancement du Lidar-->
+  <include file="$(find robot)/launch/set_map.launch"/> <!--Lancement de RViz et génération de la mp avec Hector Slam-->
+
+</launch>

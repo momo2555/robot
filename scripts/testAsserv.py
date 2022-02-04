@@ -10,8 +10,10 @@ def getreq(req):
     data = json.loads(req.data)
     if(data["type"]=="request"):
         if(data["request"]=="start_open_loop"):
-            stepDuration = float(data["stage_time"])
-            RampeOpenLoop(stepDuration).start()
+            stepDuration = float(data["duration"])
+            nbStage = float(data["nb_stage"])
+            consMax = float(data["cons_max"])
+            RampeOpenLoop(stepDuration, nbStage, consMax).start()
             pass
         elif(data["request"]=="start_diff_speed"):
             duration = float(data["duration"])
@@ -19,39 +21,27 @@ def getreq(req):
             DiffSpeed(duration, cons).start()
     pass
 class RampeOpenLoop(Thread):
-    def __init__(self, stepDuration):
+    def __init__(self, stepDuration, nbStage, consMax):
         Thread.__init__(self)
         self.__stepDuration = stepDuration
+        self.__nbStage = nbStage
+        self.__consMax = consMax
     def run(self):
-        cons = 0
-        while cons <= 1:
+        variation = self.__consMax / self.__nbStage
+        delay = self.__stepDuration / self.__nbStage
+        cons = variation
+        while cons <= self.__consMax:
             left = cons
             right = cons
             consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
             consPub.publish(consignToSend)
-            time.sleep(self.__stepDuration)
-            cons+=0.1
+            time.sleep(delay)
+            cons+=variation
 
         #arrêter le rbot
         consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)
-class OpenLoop(Thread):
-    def __init__(self, stepDuration):
-        Thread.__init__(self)
-        self.__duration = duration
-    def run(self):
-        cons = 0
-        while cons <= 1:
-            left = cons
-            right = cons
-            consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
-            consPub.publish(consignToSend)
-            time.sleep(self.__stepDuration)
-            cons+=0.1
 
-        #arrêter le rbot
-        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-        consPub.publish(consignToSend)        
 class DiffSpeed(Thread):
     def __init__(self, duration, cons):
         Thread.__init__(self)

@@ -66,7 +66,7 @@ class kalmanProcess():
                 
               
     def FigureSpeed(self, dt):
-        """#si 
+        #si 
         if self.__lastEncTicks == [-1, -1]:
             self.__lastEncTicks = self.__encTicks
         dright = self.__encTicks[1] - self.__lastEncTicks[1]
@@ -85,12 +85,12 @@ class kalmanProcess():
 
         rightSpeed = (dright)/self.__tpr
         rightSpeed = rightSpeed * self.__r * 2 * math.pi / 1000 #conversion en metre
-        rightSpeed = rightSpeed/dt
+        rightSpeed = rightSpeed/dt    
 
-        self.__encDiffSpeed = [leftSpeed, rightSpeed] """
-        rightSpeed=self.__encTicks[1]
+        self.__encDiffSpeed = [leftSpeed, rightSpeed] 
+        """rightSpeed=self.__encTicks[1]
         leftSpeed=self.__encTicks[0]
-        self.__encDiffSpeed = [self.__encTicks[0], self.__encTicks[1]]
+        self.__encDiffSpeed = [self.__encTicks[0], self.__encTicks[1]]"""
         w = (rightSpeed - leftSpeed)/self.__d*1000
         v = (rightSpeed + leftSpeed)/2
         self.__localVelocity = [v, w]

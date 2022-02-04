@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg="robot" type="sonar.py" name="sonar">
+    </node>
+
+</launch>
