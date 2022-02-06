@@ -8,31 +8,50 @@ class TestAsserv():
         self.__client = client
         self.__height = 0
         self.__width = 0
-        self.setSize(450, 350)
+        self.setSize(400, 370)
         self.setInterface()
     
     def setInterface(self):
         
         openLoopFrame = LabelFrame(self.__win)
         DiffSpeedFrame = LabelFrame(self.__win)
+
         openLoopFrame.grid(column=1, row=1, sticky="we", pady=10, padx=10)
-        DiffSpeedFrame.grid(column=1, row=2, sticky="we", pady=10, padx=10)
+        DiffSpeedFrame.grid(column=1, row=3, sticky="we", pady=10, padx=10)
         
-        #Test en boucle ouverteboucle ouverte
+        #Test en boucle ouverteboucle ouverte en rampe
         openLoopLabel = Label(openLoopFrame, text="Boucle ouverte : ")
         openLoopLabel.grid(row=1, columnspan=2, column=1, sticky="we", pady=5, padx=5)
-        stageTimeLabel = Label(openLoopFrame, text="Temps d'éxecution par étape")
+
+        stageTimeLabel = Label(openLoopFrame, text="Temps d'éxecution : ")
         stageTimeLabel.grid(row=2, columnspan=1, column=1, sticky="we", pady=5, padx=5)
 
         self.__stageTimeSpinbox = Spinbox(openLoopFrame, format="%.3f", increment=0.01 )
         self.__stageTimeSpinbox.grid(row=2, column=2, sticky="we" , pady=5, padx=5)
+
+
+        nbStagelabel = Label(openLoopFrame, text="Nombre d'étape : ")
+        nbStagelabel.grid(row=3, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+        self.__nbStageSpinbox = Spinbox(openLoopFrame, format="%.3f", increment=0.01 )
+        self.__nbStageSpinbox.grid(row=3, column=2, sticky="we" , pady=5, padx=5)
+
+
+        consMaxLabel = Label(openLoopFrame, text="Consigne maximale : ")
+        consMaxLabel.grid(row=4, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+        self.__consMaxSpinbox = Spinbox(openLoopFrame, format="%.3f", increment=0.01 )
+        self.__consMaxSpinbox.grid(row=4, column=2, sticky="we" , pady=5, padx=5)
+
 
         stageTimeSecondLabel = Label(openLoopFrame, text="s")
         stageTimeSecondLabel.grid(row=2, column=3, sticky="we", pady=5, padx=5)
 
         openLoopButton = Button(openLoopFrame, text="Lancer le test ! ")
         openLoopButton.bind('<Button-1>', self.startOpenLoop)
-        openLoopButton.grid(row = 3, column=1, columnspan=2, sticky="we", pady=5, padx=5)
+        openLoopButton.grid(row = 5, column=1, columnspan=2, sticky="we", pady=5, padx=5)
+        
+        
         #Test en boucle fermée
 
         diffSpeedLabel = Label(DiffSpeedFrame, text="Boucle fermée : ")
@@ -73,7 +92,9 @@ class TestAsserv():
         print("open loop")
         rqt = serverMsg()
         rqt.setRequest("start_open_loop")
-        rqt.addParam("stage_time", float(self.__stageTimeSpinbox.get()))
+        rqt.addParam("duration", float(self.__stageTimeSpinbox.get()))
+        rqt.addParam("nb_stage", float(self.__nbStageSpinbox.get()))
+        rqt.addParam("cons_max", float(self.__consMaxSpinbox.get()))
         self.__client.sendMsg(rqt.toObject())
 
     def startDiffSpeed(self, e):

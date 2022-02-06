@@ -13,7 +13,7 @@ class CurbGes():
         self.__width = 0
         self.__selectedCurb = Curb()
         self.__monitoredCurb = Curb()
-        self.setSize(450, 350)
+        self.setSize(400, 420)
         self.setInterface()
         pass
 
@@ -67,6 +67,7 @@ class CurbGes():
         self.__win.geometry(str(w)+'x'+str(h))
 
     def listCurbs(self, e):
+        self.__curbsList.delete(0, -1)
         FileList = [ f for f in os.listdir('./curbs') if os.path.isfile(os.path.join('./curbs',f)) ]
         #ajouter tous les fichier à la listelistCurbs
         for file in FileList:
