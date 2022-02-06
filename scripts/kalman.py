@@ -85,10 +85,12 @@ class kalmanProcess():
 
         rightSpeed = (dright)/self.__tpr
         rightSpeed = rightSpeed * self.__r * 2 * math.pi / 1000 #conversion en metre
-        rightSpeed = rightSpeed/dt
+        rightSpeed = rightSpeed/dt    
 
-        self.__encDiffSpeed = [leftSpeed, rightSpeed]
-
+        self.__encDiffSpeed = [leftSpeed, rightSpeed] 
+        """rightSpeed=self.__encTicks[1]
+        leftSpeed=self.__encTicks[0]
+        self.__encDiffSpeed = [self.__encTicks[0], self.__encTicks[1]]"""
         w = (rightSpeed - leftSpeed)/self.__d*1000
         v = (rightSpeed + leftSpeed)/2
         self.__localVelocity = [v, w]
@@ -102,6 +104,19 @@ class kalmanProcess():
 
         self.__position[0]+=dx
         self.__position[1]+=dy
+
+
+
+
+
+
+
+
+
+
+
+
+        
         self.__position[2] = self.reduceAngle(self.__position[2] + dth)
 
 
@@ -113,13 +128,13 @@ class kalmanProcess():
 def velocityPublisher(x, y, th, v, w, t, vl, vr):
     if not rospy.is_shutdown():
         odomQuat = quaternion_from_euler(0, 0, th)
-        odomBroadcaster.sendTransform(
+        """odomBroadcaster.sendTransform(
             (x, y, 0),
             odomQuat,
             t,
             "base_link",
             "odom"
-        )
+        )"""
         message = Odometry()
         message.header.stamp = t
         message.header.frame_id = "odom"

@@ -15,7 +15,7 @@ class ServerSocket(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.__server  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__server.bind(("192.168.236.11", 32233))
+        self.__server.bind(("192.168.25.11", 32233))
         self.__server.listen(1)
         self.__clients = []
         
@@ -34,12 +34,13 @@ class ClientProcess(Thread):
         print("nouveau client connecté")
         while True:
             response = self.__client.recv(1024)
-            print(response)
+            
             self.processRequest(response)
             
     def processRequest(self, msg):
         try:
             data = json.loads(msg.decode('utf8'))
+            #si on reçoit une requêtte (un oprocess à éxecuter sur le robot)
             if data["type"] == "request":
                 if data["request"] == "get_position":
                     #send the response
@@ -52,13 +53,21 @@ class ClientProcess(Thread):
                     }
                     
                     self.send(response)
-                if data["request"] == "start_open_loop":
+                elif data["request"] == "start_open_loop":
                     print(msg)
-                    robotCos.publish(msg.decode('utf8'))
+                    robotCons.publish(msg.decode('utf8'))
+                elif data["request"] == "start_diff_speed":
+                    robotCons.publish(msg.decode('utf8'))
+            #si on reçoit une rerquêtte moteur (des changement à faire sur la carte moteur)
+            elif data["type"] == "motor_request":
+                
+                robotCons.publish(msg.decode('utf8'))
+                pass
         except Exception:
             pass
     def send(self, objMsg):
         self.__client.send( json.dumps(objMsg).encode('utf8') )
+        
 class RosNode(Thread):
     def __init__(self):
 
@@ -86,29 +95,31 @@ class RobotCom():
             "left" : 0,
             "right" : 0
         }
+        
+
     def setPosition(self, posOdom):
+        #print(posOdom)
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
         sin = posOdom.pose.pose.orientation.w
         cos = posOdom.pose.pose.orientation.z
-        self.__position["th"] = math.atan2(sin, cos)
+        self.__position["th"] = math.atan2(sin, cos)*2
 
     def setVelocity(self, diffVel):
         self.__DiffVelocity["left"] = diffVel.linear.x
         self.__DiffVelocity["right"] = diffVel.linear.y
+
 
     def getVelocity(self):
         return self.__DiffVelocity
 
     def getPosition(self):
         return self.__position
-
-    def setCons(self, consTwist):
-        self.__cons["left"] = consTwist.linear.x
-        self.__cons["right"] = consTwist.linear.y
-    
     def getCons(self):
         return self.__cons
+    def setCons(self, cons):
+        self.__cons["left"] = cons.linear.x
+        self.__cons["right"] = cons.linear.y
 
 print(socket.gethostname())
 #start server
@@ -120,4 +131,5 @@ robot = RobotCom()
 rosnode = RosNode()
 rosnode.start()
 #ros publishers
-robotCos = rospy.Publisher('server_req', String, queue_size=10)
+robotCons = rospy.Publisher('server_req', String, queue_size=10)
+#motorReq = rospy.Publisher('motor_request', String, queue_size=10)

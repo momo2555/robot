@@ -10,37 +10,50 @@ def getreq(req):
     data = json.loads(req.data)
     if(data["type"]=="request"):
         if(data["request"]=="start_open_loop"):
-            OpenLoop().start()
+            stepDuration = float(data["duration"])
+            nbStage = float(data["nb_stage"])
+            consMax = float(data["cons_max"])
+            RampeOpenLoop(stepDuration, nbStage, consMax).start()
             pass
-        elif(data["request"]=="start_open_loop"):
-            DiffSpeed().start()
+        elif(data["request"]=="start_diff_speed"):
+            duration = float(data["duration"])
+            cons = float(data["v"])
+            DiffSpeed(duration, cons).start()
     pass
-class OpenLoop(Thread):
-    def __init__(self):
+class RampeOpenLoop(Thread):
+    def __init__(self, stepDuration, nbStage, consMax):
         Thread.__init__(self)
+        self.__stepDuration = stepDuration
+        self.__nbStage = nbStage
+        self.__consMax = consMax
     def run(self):
-        cons = 0
-        while cons <= 1:
+        variation = self.__consMax / self.__nbStage
+        delay = self.__stepDuration / self.__nbStage
+        cons = variation
+        while cons <= self.__consMax:
             left = cons
             right = cons
             consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
             consPub.publish(consignToSend)
-            time.sleep(1)
-            cons+=0.1
+            time.sleep(delay)
+            cons+=variation
 
         #arrêter le rbot
         consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)
-class DiffSpeed(thread):
-    def __init__(self):
+
+class DiffSpeed(Thread):
+    def __init__(self, duration, cons):
         Thread.__init__(self)
+        self.__duration = duration
+        self.cons = cons
     def run(self):
-        cons = 1
+        cons = self.cons
         consignToSend = Twist(Vector3(cons, cons, 0), Vector3(0, 0, 1))
         consPub.publish(consignToSend)
-        time.sleep(8)
+        time.sleep(self.__duration)
         #arret
-        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 1))
+        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)
 
 

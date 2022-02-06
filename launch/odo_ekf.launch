@@ -6,14 +6,14 @@
   </node>
 
   <!-- Execution du noeud qui calcul la vitesse instantanée des encodeurs -->
-  <node pkg="robot" name="speed_computing" type="kalman.py" output="screen">
+  <node pkg="robot" name="speed_computing" type="kalman.py">
   </node>
 
 
   
-  <!-- lancer rviz-->
+  <!-- lancer rviz
   <node pkg="rviz" name="rviz_screen" type="rviz" args="-d $(find robot)/rviz/robot_pos.rviz">
-  </node>
+  </node>-->
   <!-- Execution du serveur TCP 
   <node pkg="robot" name="val_server" type="valServer.py">
   </node>-->
