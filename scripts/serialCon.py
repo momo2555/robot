@@ -69,6 +69,8 @@ class setPosConsignThread(Thread):
             gcode = "G26 X{0:.2f} Y{1:.2f} \n".format(cons.linear.x, cons.linear.y)
         elif cons.angular.z == 1:
             gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
+        elif cons.angular.z == 2:
+            gcode = "G10 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.angular.x)
         self.__serial.sendGcode(gcode)        
        
 

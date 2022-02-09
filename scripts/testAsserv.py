@@ -19,6 +19,12 @@ def getreq(req):
             duration = float(data["duration"])
             cons = float(data["v"])
             DiffSpeed(duration, cons).start()
+        elif(data["request"]=="start_vel_speed"):
+            duration = float(data["duration"])
+            v = float(data["v"])
+            w = float(data["w"])
+            
+            DiffSpeed(duration, cons).start()    
     pass
 class RampeOpenLoop(Thread):
     def __init__(self, stepDuration, nbStage, consMax):
@@ -50,6 +56,21 @@ class DiffSpeed(Thread):
     def run(self):
         cons = self.cons
         consignToSend = Twist(Vector3(cons, cons, 0), Vector3(0, 0, 1))
+        consPub.publish(consignToSend)
+        time.sleep(self.__duration)
+        #arret
+        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+        consPub.publish(consignToSend)
+class VelSpeed(Thread):
+    def __init__(self, duration, v, w):
+        Thread.__init__(self)
+        self.__duration = duration
+        self.__v = v
+        self.__w = w
+    def run(self):
+        v = self.__v
+        w = self.__w
+        consignToSend = Twist(Vector3(v, 0, 0), Vector3(w, 0, 2))
         consPub.publish(consignToSend)
         time.sleep(self.__duration)
         #arret

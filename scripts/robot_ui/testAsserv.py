@@ -8,18 +8,18 @@ class TestAsserv():
         self.__client = client
         self.__height = 0
         self.__width = 0
-        self.setSize(400, 370)
+        self.setSize(400, 570)
         self.setInterface()
     
     def setInterface(self):
         
         openLoopFrame = LabelFrame(self.__win)
         DiffSpeedFrame = LabelFrame(self.__win)
-        DiffSpeedFrame = LabelFrame(self.__win)
+        velSpeedFrame = LabelFrame(self.__win)
 
         openLoopFrame.grid(column=1, row=1, sticky="we", pady=10, padx=10)
         DiffSpeedFrame.grid(column=1, row=2, sticky="we", pady=10, padx=10)
-        DiffSpeedFrame.grid(column=1, row=3, sticky="we", pady=10, padx=10)
+        velSpeedFrame.grid(column=1, row=3, sticky="we", pady=10, padx=10)
 
 
         
@@ -85,34 +85,34 @@ class TestAsserv():
         diffSpeedButton.grid(row = 4, column=1, columnspan=2, sticky="we", pady=5, padx=5)
 
         #test en vitesse
-        velocityLabel = Label(DiffSpeedFrame, text="test en vitesse (v, w) : ")
+        velocityLabel = Label(velSpeedFrame, text="test en vitesse (v, w) : ")
         velocityLabel.grid(row=1, columnspan=2, column=1, sticky="we", pady=5, padx=5)
-        velocityDurationLabel = Label(DiffSpeedFrame, text="Temps d'éxecution :")
+        velocityDurationLabel = Label(velSpeedFrame, text="Temps d'éxecution :")
         velocityDurationLabel.grid(row=2, columnspan=1, column=1, sticky="we", pady=5, padx=5)
 
-        self.__velocityDurationSpinbox = Spinbox(DiffSpeedFrame, format="%.3f", increment=0.01 )
+        self.__velocityDurationSpinbox = Spinbox(velSpeedFrame, format="%.3f", increment=0.01 )
         self.__velocityDurationSpinbox.grid(row=2, column=2, sticky="we", pady=5, padx=5 )
         
 
-        velocityDurationSecondLabel = Label(DiffSpeedFrame, text="s")
+        velocityDurationSecondLabel = Label(velSpeedFrame, text="s")
         velocityDurationSecondLabel.grid(row=2, column=3, sticky="we", pady=5, padx=5)
 
   
-        linearSpeedLabel = Label(DiffSpeedFrame, text="Vitesse linéaire:")
+        linearSpeedLabel = Label(velSpeedFrame, text="Vitesse linéaire:")
         linearSpeedLabel.grid(row=3, columnspan=1, column=1, sticky="we", pady=5, padx=5)
 
-        self.__linearSpeedSpinbox = Spinbox(DiffSpeedFrame, format="%.3f", increment=0.01 )
+        self.__linearSpeedSpinbox = Spinbox(velSpeedFrame, format="%.3f", increment=0.01 )
         self.__linearSpeedSpinbox.grid(row=3, column=2, sticky="we", pady=5, padx=5 )
         
-        rotSpeedLabel = Label(DiffSpeedFrame, text="Vitesse angulaire:")
+        rotSpeedLabel = Label(velSpeedFrame, text="Vitesse angulaire:")
         rotSpeedLabel.grid(row=4, columnspan=1, column=1, sticky="we", pady=5, padx=5)
 
-        self.__rotSpeedSpinbox = Spinbox(DiffSpeedFrame, format="%.3f", increment=0.01 )
+        self.__rotSpeedSpinbox = Spinbox(velSpeedFrame, format="%.3f", increment=0.01 )
         self.__rotSpeedSpinbox.grid(row=4, column=2, sticky="we", pady=5, padx=5 )
 
-        diffSpeedButton = Button(DiffSpeedFrame, text="Lancer le test ! ")
+        diffSpeedButton = Button(velSpeedFrame, text="Lancer le test ! ")
         diffSpeedButton.bind('<Button-1>', self.startVelSpeed)
-        diffSpeedButton.grid(row = 4, column=1, columnspan=2, sticky="we", pady=5, padx=5)
+        diffSpeedButton.grid(row = 5, column=1, columnspan=2, sticky="we", pady=5, padx=5)
        
         pass
 
