@@ -20,9 +20,9 @@ def twos_comp(val):
     return val   
 
 def gyro_cal(msb, lsb,offset) :
-    a= (msb*256+lsb)
-    a= twos_comp(a)
-    a=a-offset
+    a = (msb*256+lsb)
+    a = twos_comp(a)
+    a = a-offset
 
     return a*0.017453293/65.535 
 
@@ -32,31 +32,31 @@ def accel_cal(msb, lsb) :
     # 4/2^10 = 0.00390625 
     # Obtenir les acceleration en unité SI on multiplie le resultat precedent par 9.81 
     # On obtient la constante de conversion : 0.038320312
-    a= (msb*256+lsb)
-    a= twos_comp(a)
+    a = (msb*256+lsb)
+    a = twos_comp(a)
 
     return a* 0.038320312
 
 def gyro_offset() :
-    tot_x=0
-    tot_y=0
-    tot_z=0
+    tot_x = 0
+    tot_y = 0
+    tot_z = 0
     for i in range(20) :
-        b= bus.read_i2c_block_data(GYRO,0x1D,6)
+        b = bus.read_i2c_block_data(GYRO,0x1D,6)
         print(b)
         tot_x = tot_x + (b[0]*256+b[1])
         tot_y = tot_y + (b[2]*256+b[3])
         tot_z = tot_z + (b[4]*256+b[5])
 
     #
-    tot_x=int(tot_x/20)
-    tot_y=int(tot_y/20)
-    tot_z=int(tot_z/20)
+    tot_x = int(tot_x/20)
+    tot_y = int(tot_y/20)
+    tot_z = int(tot_z/20)
 
     #
-    tot_x=twos_comp(tot_x)
-    tot_y=twos_comp(tot_y)
-    tot_z=twos_comp(tot_z)
+    tot_x = twos_comp(tot_x)
+    tot_y = twos_comp(tot_y)
+    tot_z = twos_comp(tot_z)
 
     print(tot_x)
     print(tot_y)
@@ -69,7 +69,7 @@ def gyro_offset() :
 
 
 # Configuration de l'accelerometre et du gyroscope
-bus=SMBus(1) 
+bus = SMBus(1)
 time.sleep(0.001)
 
 bus.write_byte_data(GYRO, 0x16, 0x0B)  
@@ -95,9 +95,9 @@ time.sleep(0.001)
 bus.write_byte_data(GYRO, 0x3D, 0x28)
 
 
-offset= gyro_offset()
+offset = gyro_offset()
 
-b=[]
+b = []
 while 1 :
     # Comme le gyro recupere et stock les 3 acceleration de l'accelerometre
     # On peut lire les 3 vitesse angulaire et les 3 axcel en lisant les 12 registre qui sont comme suivit :
@@ -107,16 +107,16 @@ while 1 :
     # x_accel 15-8 bit, x_accel 7-0,
     # y_accel 15-8 bit, y_accel 7-0,
     # z_accel 15-8 bit, z_accel 7-0
-    b= bus.read_i2c_block_data(GYRO,0x1D,12)
+    b = bus.read_i2c_block_data(GYRO,0x1D,12)
     print(b)
     
     x_gyro = gyro_cal(b[0],b[1],offset[0])
-    y_gyro= - gyro_cal(b[2],b[3],offset[1])
-    z_gyro= gyro_cal(b[4],b[5],offset[2])
+    y_gyro = - gyro_cal(b[2],b[3],offset[1])
+    z_gyro = gyro_cal(b[4],b[5],offset[2])
 
-    y_accel= accel_cal(b[7],b[6])
-    x_accel= accel_cal(b[9],b[8])
-    z_accel= accel_cal(b[11],b[10])
+    y_accel = accel_cal(b[7],b[6])
+    x_accel = accel_cal(b[9],b[8])
+    z_accel = accel_cal(b[11],b[10])
 
     
     print ('x_gyro = '+ str(x_gyro))
