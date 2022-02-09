@@ -154,7 +154,7 @@ class MotSerial(serial.Serial):
         return sr
         pass
 
-serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM0")
+serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM1")
 
 print(serial.__file__)
 ser = MotSerial(serialName)
