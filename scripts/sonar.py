@@ -15,13 +15,13 @@ from geometry_msgs.msg import Point32
 from tf2_ros.buffer_interface import Stamped
 import yaml
 
-######################################################
+#-------------------------------------------------------------------------------
 
 class Sonar():
 
     def __init__(self):
         self.serial = serial.Serial(port='/dev/ttyUSB0',baudrate = 115200);
-        self.stream=open("/home/loic/catkin_ws/src/sonar/config/sonar_config.yaml",'r');
+        self.stream=open("/home/loic/catkin_ws/src/sonar/config/sonar_config.yaml",'r'); #TODO : Change path
         self.data=yaml.load(self.stream);
         self.sonarPos=self.data.items();
 
@@ -87,3 +87,11 @@ class Sonar():
         cloud.points=points
         self.publisher.publish(cloud)
         time.sleep(0.1)
+
+#-------------------------------------------------------------------------------
+
+sonar = Sonar();
+sonar.initPos();
+sonar.initRos();
+while 1:
+    sonar.runSonar();
