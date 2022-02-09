@@ -69,7 +69,30 @@ class MainWin(Tk):
 		self.__robot.drawRobot()
 		self.grid_columnconfigure(1, weight=1)
 		self.grid_rowconfigure(1, weight=1)
-		
+
+		#consigne en position
+		positionConsFrame = LabelFrame(bottomtSide, text="Consigne en position")
+		positionConsFrame.grid(column=1, row=1, sticky="we", pady=10, padx=10)
+
+		self.__posXSpinBox = Spinbox(positionConsFrame, format="%.3f", increment=0.01 )
+		self.__posXSpinBox.grid(row=1, column=2, sticky="we" , pady=5, padx=5)
+		xPosLabel = Label(positionConsFrame, text="x : ")
+		xPosLabel.grid(row=1, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+		self.__posYSpinBox = Spinbox(positionConsFrame, format="%.3f", increment=0.01 )
+		self.__posYSpinBox.grid(row=2, column=2, sticky="we" , pady=5, padx=5)
+		yPosLabel = Label(positionConsFrame, text="Y : ")
+		yPosLabel.grid(row=2, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+		self.__posThSpinBox = Spinbox(positionConsFrame, format="%.3f", increment=0.01 )
+		self.__posThSpinBox.grid(row=3, column=2, sticky="we" , pady=5, padx=5)
+		thPosLabel = Label(positionConsFrame, text="theta : ")
+		thPosLabel.grid(row=3, columnspan=1, column=1, sticky="we", pady=5, padx=5)
+
+		posConsButton = Button(positionConsFrame, text = "Lancer")
+		posConsButton.bind('<Button-1>', self.sendPosCons)
+		posConsButton.grid(column=1, row=4, columnspan=2, sticky="we", padx=7, pady=7)
+
 
 	def robotGetData(self):
 		self.__client.onReceive(self.__robot.setFromServer)
@@ -87,7 +110,13 @@ class MainWin(Tk):
 
 	def showMotorProp(self, e):
 		MotorProp(Toplevel(self), self.__client)
-	
+	def sendPosCons(self, e):
+		rqt = serverMsg()
+		rqt.setRequest("position_cons")
+		rqt.addParam("x", float(self.__posXSpinBox.get()))
+		rqt.addParam("y", float(self.__posYSpinBox.get()))
+		rqt.addParam("th", float(self.__posThSpinBox.get()))
+		self.__client.sendMsg(rqt.toObject())
 	def showAsservTest(self, e):
 		TestAsserv(Toplevel(self), self.__client)
 	def showCurbGes(self, e):
