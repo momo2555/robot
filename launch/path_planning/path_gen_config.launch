@@ -1,8 +1,8 @@
 <launch>
 
   <!--Capteur d'obstacles-->
-  <include file="$(find robot)/launch/lidar.launch"/> <!--Configuration et lancement du Lidar-->
-  <include file="$(find robot)/launch/ultrasonic.launch"/> <!--Configuration et lancement des capteurs ultrason-->
+  <include file="$(find robot)/launch/sensor/lidar.launch"/> <!--Configuration et lancement du Lidar-->
+  <include file="$(find robot)/launch/sensor/ultrasonic.launch"/> <!--Configuration et lancement des capteurs ultrason-->
 
   <!--Capteur odometrique-->
   <node pkg="odom_node_pkg" type="odom_node_type" name="odom_node" output="screen">
