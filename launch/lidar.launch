@@ -9,4 +9,7 @@
     <param name="max_ang_limit" value="2.0862138271331787"/>
   </node>
 
+  <node pkg="robot" type="lidar.py" name="lidar">
+  </node>
+
 </launch>

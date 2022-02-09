@@ -3,7 +3,7 @@ from smbus2 import SMBus
 import time 
 import numpy as np
 
-def IMU():
+class IMU():
 
     def __init__(self):
         #Constant
