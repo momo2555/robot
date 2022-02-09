@@ -2,6 +2,7 @@ from tkinter import *
 from turtle import width
 from clientThread import serverMsg
 class MotorProp():
+
     def __init__(self, win, client):
         self.__win = win
         self.__client = client
@@ -110,15 +111,10 @@ class MotorProp():
         applyKmeasureButton.bind('<Button-1>', self.applyKmeasureChanges)
         applyKmeasureButton.grid(column=6, row=13, columnspan=3, sticky="we", padx=7, pady=7)
 
-        
-
     def setSize(self, w, h):
         self.__height = h
         self.__width = w
         self.__win.geometry(str(w)+'x'+str(h))
-       
-        
-        
 
     def applyLeftPidChanges(self, e):
         #send left values
@@ -157,5 +153,4 @@ class MotorProp():
         msg.addParam("l", float(self.__measureKleftEntry.get()))
         msg.addParam("r", float(self.__measureKrightEntry.get()))
         self.__client.sendMsg(msg.toObject())
-        pass
         pass

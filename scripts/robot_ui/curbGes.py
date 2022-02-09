@@ -23,8 +23,7 @@ class CurbGes():
         curbFrame = LabelFrame(self.__win, text='Courbes')
         curbFrame.grid(column=1, row=2, sticky="we", padx=5, pady=5)
 
-
-        #enregistrement
+        # Enregistrement
         self.__beginSavingButton = Button(savingFrame, text="Commmencer l'enregistrement")
         self.__beginSavingButton.bind('<Button-1>', self.startSaving)
         self.__beginSavingButton.grid(row=1, columnspan= 3, column=1, sticky="we", padx=10, pady=10)
@@ -40,7 +39,7 @@ class CurbGes():
         self.__infoLabel.grid(row=2, column=3, sticky="we", padx=5, pady=5)
 
 
-        #courbes
+        # Courbes
         curbLabel = Label(curbFrame, text="Liste des courbes: ")
         curbLabel.grid(row=1, column=1, sticky="we", padx=5, pady=5)
 
@@ -57,9 +56,8 @@ class CurbGes():
         showButton.grid(row=3, column=2, sticky="we", padx=5, pady=5)
 
         deleteButton = Button(curbFrame, text="Supprimer la courbe")
-        #suppression bind
+        # Suppression bind
         deleteButton.grid(row=4, column=2, sticky="we", padx=5, pady=5)
-
 
     def setSize(self, w, h):
         self.__height = h
@@ -69,18 +67,17 @@ class CurbGes():
     def listCurbs(self, e):
         self.__curbsList.delete(0, -1)
         FileList = [ f for f in os.listdir('./curbs') if os.path.isfile(os.path.join('./curbs',f)) ]
-        #ajouter tous les fichier à la listelistCurbs
+        # Ajouter tous les fichier à la listelistCurbs
         for file in FileList:
          self.__curbsList.insert('end', file)
         pass
 
-
     def showCurb(self, e):
-        #reccupére la courbe slectionnée
+        # Recupere la courbe selectionee
         index = self.__curbsList.curselection()
         if len(index) > 0:
             index = index[0]
-            #get file name
+            # Get file name
             fileName = self.__curbsList.get(index)
             self.__selectedCurb.open('curbs/' + fileName)
             self.__selectedCurb.plot()
@@ -89,9 +86,7 @@ class CurbGes():
         pass
 
     def startSaving(self, e):
-       
         if not self.__monitoredCurb.ifMonitoring():
-           
             self.__monitoredCurb.initCurb()
             self.__monitoredCurb.startMonitoring()
             self.__parent.startCurbMonitoring(self.__monitoredCurb)
@@ -102,11 +97,9 @@ class CurbGes():
     
     def StopSaving(self):
         self.__monitoredCurb.stopMonitoring()
-        #pas besoin d'envoyer l'info à toutes les unités d'enregistrement
+        # Pas besoin d'envoyer l'info à toutes les unités d'enregistrement
         self.__infoLabel.config(text = "Arrêt")
         self.__beginSavingButton.config(text="Commencer l'enregistrment")
 
     def SaveCurb(self, e):
         self.__monitoredCurb.save('curbs/' + self.__fileNameEntry.get())
-
-        
