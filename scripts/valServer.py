@@ -101,8 +101,8 @@ class RobotCom():
         #print(posOdom)
         self.__position["x"] = posOdom.pose.pose.position.x
         self.__position["y"] = posOdom.pose.pose.position.y
-        sin = posOdom.pose.pose.orientation.w
-        cos = posOdom.pose.pose.orientation.z
+        sin = posOdom.pose.pose.orientation.z
+        cos = posOdom.pose.pose.orientation.w
         self.__position["th"] = math.atan2(sin, cos)*2
 
     def setVelocity(self, diffVel):

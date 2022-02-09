@@ -23,8 +23,8 @@ class posAsserv(Thread):
     def setPos(self, posOdom):
         x = posOdom.pose.pose.position.x
         y = posOdom.pose.pose.position.y
-        sin = posOdom.pose.pose.orientation.w
-        cos = posOdom.pose.pose.orientation.z
+        sin = posOdom.pose.pose.orientation.z
+        cos = posOdom.pose.pose.orientation.w
         th = math.atan2(sin, cos)*2
         self.__pos = [x, y, th]
         pass
