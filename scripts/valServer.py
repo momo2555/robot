@@ -15,7 +15,7 @@ class ServerSocket(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.__server  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__server.bind(("192.168.25.11", 32233))
+        self.__server.bind(("192.168.23.11", 32233))
         self.__server.listen(1)
         self.__clients = []
         
