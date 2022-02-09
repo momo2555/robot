@@ -13,52 +13,45 @@ import json
 import math
 import time
 import socket
-""" root = Tk()
+""" 
+root = Tk()
 width = 400
 heigh = 400
 param_a_entrer = str(width)+"x"+str(heigh)
-root.geometry(param_a_entrer)		
+root.geometry(param_a_entrer)        
 txt = Label(root, text = "test")
 txt.grid(column = 0, row = 0)
+
 def test():
-	
-	print("test")
-	
+    print("test")
+    
 bouton = Button(root, text = 'test' , command = test())
 bouton.grid()
-root.mainloop() """
-
-#on ne peut pas appeler spin() de rospy et mainLoop() de tkinter au même temps
-#on créé donc un thread pour éxecuter rospy.spin()
-
-
-"""""	
-
-class Bouton(Button):
-	def __init__(self, win, txt = '', cmd = None, x = 10, y = 10):
-		self.win = win
-		self.txt = txt
-		self.cmd = cmd
-		self.x = x
-		self.y = y
-		#Button(win,text = txt, command = cmd)
-		
-	def replace(self,x,y):
-		self.place(x,y)
-
+root.mainloop()
 """
 
-	
+# On ne peut pas appeler spin() de rospy et mainLoop() de tkinter en même temps
+# On créé donc un thread pour éxecuter rospy.spin()
 
 
+""""
+class Bouton(Button):
+    def __init__(self, win, txt = '', cmd = None, x = 10, y = 10):
+        self.win = win
+        self.txt = txt
+        self.cmd = cmd
+        self.x = x
+        self.y = y
+        #Button(win,text = txt, command = cmd)
+        
+    def replace(self,x,y):
+        self.place(x,y)
+"""
 
 client = ClientSocket()
 client.start()
 
-
-
-
-print("lancement de l'interface graphique")
+print("Lancement de l'interface graphique")
 mainWin = MainWin(client)
 mainWin.robotGetData()
 mainWin.mainLoop()
