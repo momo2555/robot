@@ -124,3 +124,8 @@ def IMU():
         print ('z_accel = '+ str(z_accel))
 
         time.sleep(1)
+
+imu = IMU();
+imu.setupIMU();
+while 1:
+    imu.runIMU();
