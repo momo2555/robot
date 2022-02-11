@@ -122,7 +122,7 @@ class IMU():
         print ('x_accel = '+ str(x_accel))
         print ('y_accel = '+ str(y_accel))
         print ('z_accel = '+ str(z_accel))
-
+        #attente 1 seconde
         time.sleep(1)
 
 imu = IMU();

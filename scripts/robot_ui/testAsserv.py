@@ -57,7 +57,6 @@ class TestAsserv():
         
         
         #Test en boucle fermée
-
         diffSpeedLabel = Label(DiffSpeedFrame, text="Boucle fermée : ")
         diffSpeedLabel.grid(row=1, columnspan=2, column=1, sticky="we", pady=5, padx=5)
         durationLabel = Label(DiffSpeedFrame, text="Temps d'éxecution :")
@@ -142,7 +141,7 @@ class TestAsserv():
         print("diff speed")
         rqt = serverMsg()
         rqt.setRequest("start_vel_speed")
-        rqt.addParam("duration", float(self.__durationSpinbox.get()))
-        rqt.addParam("v", float(self.__speedSpinbox.get()))
-        rqt.addParam("w", float(self.__speedSpinbox.get()))
+        rqt.addParam("duration", float(self.__velocityDurationSpinbox.get()))
+        rqt.addParam("v", float(self.__linearSpeedSpinbox.get()))
+        rqt.addParam("w", float(self.__rotSpeedSpinbox.get()))
         self.__client.sendMsg(rqt.toObject())

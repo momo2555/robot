@@ -22,10 +22,10 @@ class posAsserv(Thread):
         self.__wmax = 0.01
         pass
     def setPos(self, posOdom):
-        x = posOdom.pose.pose.position.x * 1000
-        y = posOdom.pose.pose.position.y * 1000
-        sin = posOdom.pose.pose.orientation.w
-        cos = posOdom.pose.pose.orientation.z
+        x = posOdom.pose.pose.position.x
+        y = posOdom.pose.pose.position.y
+        sin = posOdom.pose.pose.orientation.z
+        cos = posOdom.pose.pose.orientation.w
         th = math.atan2(sin, cos)*2
         self.__pos = [x, y, th]
         pass
