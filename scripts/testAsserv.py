@@ -24,7 +24,7 @@ def getreq(req):
             v = float(data["v"])
             w = float(data["w"])
             
-            DiffSpeed(duration, cons).start()    
+            VelSpeed(duration, v, w).start()    
     pass
 class RampeOpenLoop(Thread):
     def __init__(self, stepDuration, nbStage, consMax):
@@ -43,7 +43,13 @@ class RampeOpenLoop(Thread):
             consPub.publish(consignToSend)
             time.sleep(delay)
             cons+=variation
-
+        while cons > 0:
+            left = cons
+            right = cons
+            consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
+            consPub.publish(consignToSend)
+            time.sleep(delay)
+            cons-=variation
         #arrêter le rbot
         consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)

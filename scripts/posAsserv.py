@@ -15,14 +15,15 @@ class posAsserv(Thread):
         self.__cons = [0, 0, 0]
         self.__pos = [0, 0, 0]
         self.__velCons = [0, 0]
+        self.__precision = 0.01
         self.__k1 = 1
         self.__k2 = 1
         self.__vmax = 0.5
-        self.__wmax = 1
+        self.__wmax = 0.01
         pass
     def setPos(self, posOdom):
-        x = posOdom.pose.pose.position.x
-        y = posOdom.pose.pose.position.y
+        x = posOdom.pose.pose.position.x * 1000
+        y = posOdom.pose.pose.position.y * 1000
         sin = posOdom.pose.pose.orientation.w
         cos = posOdom.pose.pose.orientation.z
         th = math.atan2(sin, cos)*2
@@ -31,26 +32,37 @@ class posAsserv(Thread):
 
     def setCons(self, x, y, th):
         self.__cons = [x, y, th]
+        print("set postion consigne (" + str(x) + ";" + str(y) + ';' + str(th) + ')')
 
-    def start(self):
+
+    def run(self):
+        print('start')
         while(True):
             dx = self.__cons[0] - self.__pos[0]
             dy = self.__cons[1] - self.__pos[1]
-            theta = self.__pos[2]
-            delta = math.atan2(dy, dx) - theta
+            if (math.sqrt(dx**2 + dy**2) > self.__precision):
+                theta = self.__pos[2]
+                delta = math.atan2(dy, dx) - theta
 
-            consv = self.__k1 * math.cos(theta)
-            if consv > self.__vmax:
-                consv = self.__vmax
-            consw = self.__k2 * theta
-            if consw > self.__wmax:
-                consw = self.__wmax
+                consv = self.__k1 * math.cos(theta)
+                if consv > self.__vmax:
+                    consv = self.__vmax
+                if consv < -self.__vmax:
+                    consv = -self.__vmax
+                consw = self.__k2 * theta
+                if consw > self.__wmax:
+                    consw = self.__wmax
+                if consw < -self.__wmax:
+                    consw = -self.__wmax
 
-            consignToSend = Twist(Vector3(consv,0 , 0), Vector3(consw, 0, 2))
-            consPub.publish(consignToSend)
+                consignToSend = Twist(Vector3(consv,0 , 0), Vector3(consw, 0, 2))
+                consPub.publish(consignToSend)
 
 
-            time.sleep(0.1)
+                time.sleep(0.1)
+            else:
+                print("fin")
+                pass
         pass
 
 def beginAsserv(req):
@@ -61,7 +73,7 @@ def beginAsserv(req):
             y = float(data["y"])
             th = float(data["th"])
             asserv.setCons(x, y, th)
-            asserv.run()
+            asserv.start()
             pass
     pass
 asserv = posAsserv()

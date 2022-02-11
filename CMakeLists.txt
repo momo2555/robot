@@ -163,6 +163,7 @@ catkin_install_python(PROGRAMS
   scripts/serialCon.py
   scripts/kalman.py
   scripts/consign.py
+  scripts/posAsserv.py
   scripts/sonar.py
   scripts/valServer.py
   scripts/robot_ui/main_ui.py
