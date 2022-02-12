@@ -1,3 +1,4 @@
+from cProfile import label
 import matplotlib.pyplot as plt
 import time
 import os
@@ -8,6 +9,7 @@ class Curb ():
         self.__path = ""
         self.__monitoring = False
         self.__time = time.time()
+        self.__name = ""
         pass
 
     def initCurb(self):
@@ -21,13 +23,31 @@ class Curb ():
         self.__Cr = []
 
     def plot(self):
-        fig = plt.figure()
+        """fig = plt.figure()
+        
         fig.add_subplot(121)
-        plt.plot(self.__T, self.__Cl)
-        plt.plot(self.__T, self.__Vl)
+        plt.plot(self.__T, self.__Cl, label="Consigne")
+        plt.plot(self.__T, self.__Vl, label="Réponse")
+        
         fig.add_subplot(122)
-        plt.plot(self.__T, self.__Cr)
-        plt.plot(self.__T, self.__Vr)
+        plt.plot(self.__T, self.__Cr, label="Consigne")
+        plt.plot(self.__T, self.__Vr, label="Réponse")"""
+        
+
+        fig, axs = plt.subplots(1, 2, constrained_layout=True)
+        axs[0].plot(self.__T, self.__Cl)
+        axs[0].plot(self.__T, self.__Vl)
+        axs[0].set_title('Roue gauche')
+        axs[0].set_xlabel('temps (s)')
+        axs[0].set_ylabel('vitesse')
+        
+        fig.suptitle(self.__name, fontsize=16)
+        
+        axs[1].plot(self.__T, self.__Cr, label="Consigne")
+        axs[1].plot(self.__T, self.__Vr, label="Réponse")
+        axs[1].set_title('Roue droite')
+        axs[1].set_xlabel('temps (s)')
+        axs[1].set_ylabel('Vitesse')
         plt.show()
         pass
 
@@ -82,3 +102,9 @@ class Curb ():
     
     def ifMonitoring(self):
         return self.__monitoring
+
+    def setName(self, name):
+        self.__name = name
+
+    def getName(self):
+        return self.__name
