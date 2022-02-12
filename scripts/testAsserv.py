@@ -36,20 +36,36 @@ class RampeOpenLoop(Thread):
         variation = self.__consMax / self.__nbStage
         delay = self.__stepDuration / self.__nbStage
         cons = variation
-        while cons <= self.__consMax:
-            left = cons
-            right = cons
-            consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
-            consPub.publish(consignToSend)
-            time.sleep(delay)
-            cons+=variation
-        while cons > 0:
-            left = cons
-            right = cons
-            consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
-            consPub.publish(consignToSend)
-            time.sleep(delay)
-            cons-=variation
+        if  self.__consMax > 0:
+            while cons <= self.__consMax:
+                left = cons
+                right = cons
+                consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
+                consPub.publish(consignToSend)
+                time.sleep(delay)
+                cons+=variation
+            while cons > 0:
+                left = cons
+                right = cons
+                consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
+                consPub.publish(consignToSend)
+                time.sleep(delay)
+                cons-=variation
+        else:
+            while cons >= self.__consMax:
+                left = cons
+                right = cons
+                consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
+                consPub.publish(consignToSend)
+                time.sleep(delay)
+                cons+=variation
+            while cons < 0:
+                left = cons
+                right = cons
+                consignToSend = Twist(Vector3(left, right, 0), Vector3(0, 0, 0))
+                consPub.publish(consignToSend)
+                time.sleep(delay)
+                cons-=variation
         #arrêter le rbot
         consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         consPub.publish(consignToSend)

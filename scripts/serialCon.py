@@ -51,6 +51,7 @@ class getPosThread(Thread):
         #on renvoie le position du client
         strData = self.getPosition()
         data = strData.replace('enc=(', '').replace(')', '').split(';')
+        
         return encodersResponse(float(data[0]),float(data[1]))  
 
 

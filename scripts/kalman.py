@@ -47,6 +47,7 @@ class kalmanProcess():
             self.__lastEncTicks = self.__encTicks
             #enregistre les données récupérées
             self.__encTicks = [data[0], data[1]]
+            
             #temps actuel
             self.__currentTime = rospy.Time.now()
             #calcul de dt
@@ -70,7 +71,9 @@ class kalmanProcess():
         if self.__lastEncTicks == [-1, -1]:
             self.__lastEncTicks = self.__encTicks
         dright = self.__encTicks[1] - self.__lastEncTicks[1]
+        
         dleft = self.__encTicks[0] - self.__lastEncTicks[0]
+       
         if(abs(dright) > self.__maxSafeTicks):
             dright = ((-1, 1)[dright>=0])*(self.__maxTicks>>2) -  dright
             
@@ -82,7 +85,7 @@ class kalmanProcess():
         leftSpeed = (dleft)/self.__tpr
         leftSpeed = leftSpeed * self.__r * 2 * math.pi / 1000 #conversion en metre
         leftSpeed = leftSpeed/dt
-
+        #right wheel
         rightSpeed = (dright)/self.__tpr
         rightSpeed = rightSpeed * self.__r * 2 * math.pi / 1000 #conversion en metre
         rightSpeed = rightSpeed/dt    
@@ -143,7 +146,7 @@ def velocityPublisher(x, y, th, v, w, t, vl, vr):
         message.child_frame_id = "base_link"
         message.twist.twist = Twist(Vector3(v, 0, 0), Vector3(0, 0, w))
         #print(message)
-
+        
         odomPub.publish(message)
 
         diffMsg = Twist(Vector3(vl, vr, 0), Vector3(0, 0, 0))
