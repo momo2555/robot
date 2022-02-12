@@ -1,7 +1,11 @@
 #!/usr/env python3
 from smbus2 import SMBus 
 import time 
-import numpy as np
+import numpy as npsonar
+import rospy
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
 class IMU():
 
@@ -15,12 +19,15 @@ class IMU():
         self.bus = SMBus(1)
         self.b = []
         self.offset
-    
+        #init ros node
+        rospy.init_node("imu_driver")
+        self.imu_publisher = rospy.Publisher("imu_data", Imu)
+    #calcul du complement à 2 d'un int
     def twos_comp(self, val):
-        #Compute the 2's complement of int value val
         if (val & (1 << (15))) != 0: 
             val =(-1)*(65535 + 1 - val)
         return val
+
 
     def gyro_cal(self, msb, lsb,offset) :
         a = (msb*256+lsb)
@@ -122,10 +129,17 @@ class IMU():
         print ('x_accel = '+ str(x_accel))
         print ('y_accel = '+ str(y_accel))
         print ('z_accel = '+ str(z_accel))
-        #attente 1 seconde
-        time.sleep(1)
 
-imu = IMU();
-imu.setupIMU();
+        message = Imu()
+        message.header.stamp = rospy.Time.now()
+        message.header.frame_id = "odom"
+        message.linear_acceleration = Vector3(x_accel, y_accel, z_accel)
+        message.angular_velocity = Vector3(x_gyro, y_gyro, z_gyro)
+        self.imu_publisher.publish(message)
+        #attente 1 seconde
+        time.sleep(0.01)
+
+imu = IMU()
+imu.setupIMU()
 while 1:
-    imu.runIMU();
+    imu.runIMU()

@@ -80,6 +80,7 @@ class CurbGes():
             # Get file name
             fileName = self.__curbsList.get(index)
             self.__selectedCurb.open('curbs/' + fileName)
+            self.__selectedCurb.setName(fileName)
             self.__selectedCurb.plot()
         else:
             print("Vous n'avez pas sélectionner de courbes !")

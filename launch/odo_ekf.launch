@@ -4,7 +4,9 @@
   <node pkg="robot" name="serial_reader" type="serialCon.py" output="screen">
     <param name="motor_controller_port" value="/dev/ttyACM0" />
   </node>
-
+   <!-- Execution du noeud qui calcul réccupère les données de la centrale inertielle -->
+  <node pkg="robot" name="get_imu" type="imu.py">
+  </node>
   <!-- Execution du noeud qui calcul la vitesse instantanée des encodeurs -->
   <node pkg="robot" name="speed_computing" type="kalman.py" output="screen">
   </node>
@@ -18,7 +20,7 @@
   <node pkg="robot" name="val_server" type="valServer.py">
   </node>-->
 
-  <!-- Execution de noeud du filtre de Kalma -->
+  <!-- Execution de noeud du filtre de Kalman -->
   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     <remap from="odometry/filtered" to="odom/ekf/enc_imu"/>
 
@@ -42,6 +44,18 @@
                                     false, false, true,
                                     false, false, false ]</rosparam>
     
+    <param name="imu0" value="/imu_data"/>
+    <param name="imu0_differential" value="false" />
+    <param name="imu0_relative" value="false" /> 
+    <param name="imu0_queue_size" value="10" />
+    <param name="imu0_remove_gravitational_acceleration" value="true" />
+    <rosparam param="odom0_config">[false,  false, false,
+                                    false, false, false,
+                                    false, false, false,
+                                    false, false, true,
+                                    true, true, false ]</rosparam>
+    
+
 
     <param name="print_diagnostics" value="true" />
     <param name="debug" value="false" />
