@@ -165,6 +165,7 @@ catkin_install_python(PROGRAMS
   scripts/consign.py
   scripts/posAsserv.py
   scripts/sonar.py
+  scripts/imu.py
   scripts/valServer.py
   scripts/robot_ui/main_ui.py
   scripts/valServer.py
