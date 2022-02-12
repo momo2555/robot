@@ -58,6 +58,10 @@ class ClientProcess(Thread):
                     robotCons.publish(msg.decode('utf8'))
                 elif data["request"] == "start_diff_speed":
                     robotCons.publish(msg.decode('utf8'))
+                elif data["request"] == "start_vel_speed":
+                    robotCons.publish(msg.decode('utf8'))
+                elif data["request"] == "position_cons":
+                    robotCons.publish(msg.decode('utf8'))    
             #si on reçoit une rerquêtte moteur (des changement à faire sur la carte moteur)
             elif data["type"] == "motor_request":
                 
@@ -99,7 +103,7 @@ class RobotCom():
 
     def setPosition(self, posOdom):
         #print(posOdom)
-        self.__position["x"] = posOdom.pose.pose.position.x
+        self.__position["x"] = posOdom.pose.pose.position.x 
         self.__position["y"] = posOdom.pose.pose.position.y
         sin = posOdom.pose.pose.orientation.z
         cos = posOdom.pose.pose.orientation.w

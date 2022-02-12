@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/momo/valrob/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/momo/valrob/src/driver_common/driver_base/include/**",
+        "/home/momo/valrob/src/hokuyo_node/include/**",
+        "/home/momo/valrob/src/driver_common/timestamp_tools/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-arm64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
