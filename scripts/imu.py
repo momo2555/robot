@@ -1,145 +1,48 @@
 #!/usr/env python3
-from smbus2 import SMBus 
-import time 
-import numpy as npsonar
+import time
+from BMI160_i2c import Driver
+import math
 import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
-class IMU():
+print('Initialisation du capteur ...')
+sensor = Driver(0x69)
+print('Done!')
+sensor.setAccelOffsetEnabled(True)
+sensor.setGyroOffsetEnabled(True)
 
-    def __init__(self):
-        #Constant
-        self.GYRO = 0x68
-        self.ACCEL = 0x53
-        self.reg_gyro_x = 0x1D
-        self.ADXL345_POWER_CTL = 0x2D
-        self.DATA_FORMAT = 0x31
-        self.bus = SMBus(1)
-        self.b = []
-        self.offset
-        #init ros node
-        rospy.init_node("imu_driver")
-        self.imu_publisher = rospy.Publisher("imu_data", Imu)
-    #calcul du complement à 2 d'un int
-    def twos_comp(self, val):
-        if (val & (1 << (15))) != 0: 
-            val =(-1)*(65535 + 1 - val)
-        return val
+sensor.autoCalibrateXAccelOffset(0)
+sensor.autoCalibrateYAccelOffset(0)
+sensor.autoCalibrateZAccelOffset(1)
+sensor.autoCalibrateGyroOffset()
+print(sensor.getFullScaleGyroRange())
 
+#init ros
+rospy.init_node("imu_driver")
+imu_publisher = rospy.Publisher("imu_data", Imu, queue_size=10)
 
-    def gyro_cal(self, msb, lsb,offset) :
-        a = (msb*256+lsb)
-        a = self.twos_comp(a)
-        a = a-offset
-
-        return a*0.017453293/65.535
-
-    def accel_cal(self, msb, lsb) :
-        #Conversion des données des accelerateurs binaire en float
-        # ADC du capteur est en 10 bits on a choisit +/-2g soit 4g de plage de mesure 
-        # 4/2^10 = 0.00390625 
-        # Obtenir les acceleration en unité SI on multiplie le resultat precedent par 9.81 
-        # On obtient la constante de conversion : 0.038320312
-        a = (msb*256+lsb)
-        a = self.twos_comp(a)
-
-        return a* 0.038320312
-
-    def gyro_offset(self) :
-        tot_x = 0
-        tot_y = 0
-        tot_z = 0
-        for i in range(20) :
-            b = self.bus.read_i2c_block_data(self.GYRO, 0x1D, 6)
-            print(b)
-            tot_x = tot_x + (b[0]*256+b[1])
-            tot_y = tot_y + (b[2]*256+b[3])
-            tot_z = tot_z + (b[4]*256+b[5])
-
-        #
-        tot_x = int(tot_x/20)
-        tot_y = int(tot_y/20)
-        tot_z = int(tot_z/20)
-
-        #
-        tot_x = self.twos_comp(tot_x)
-        tot_y = self.twos_comp(tot_y)
-        tot_z = self.twos_comp(tot_z)
-
-        print(tot_x)
-        print(tot_y)
-        print(tot_z)
-
-        return tot_x,tot_y,tot_z
-
-    def setupIMU(self):
-        self.bus.write_byte_data(self.GYRO, 0x16, 0x0B)
-        time.sleep(0.001)
-            #set accel register data address
-
-        self.bus.write_byte_data(self.GYRO, 0x18, 0x32)
-            # set accel i2c slave address
-        time.sleep(0.001)
-        self.bus.write_byte_data(self.GYRO, 0x14, self.ACCEL)
-        time.sleep(0.001)
-
-        # Reglage du filtre passe bas de la vitesse angulaire
-        self.bus.write_byte_data(self.GYRO, 0x3D, 0x08)
-
-        # Pour le demarrage des mesures il faut set le bit 3 dans le registre Power_ctl 
-        # On peut ecrire 0x08
-        time.sleep(0.001)
-        self.bus.write_byte_data(self.ACCEL, self.ADXL345_POWER_CTL, 0x08)
-        time.sleep(0.001)
-        self.bus.write_byte_data(self.ACCEL, self.DATA_FORMAT, 0x00) #Write 0x01 for 2G, 0x01 for 4G, 0x0A for 8G,0x0B for 16G
-        time.sleep(0.001)
-        self.bus.write_byte_data(self.GYRO, 0x3D, 0x28)
-
-
-        self.offset = self.gyro_offset()
-        
-    def busClose(self):
-        self.bus.close()
-
-    def runIMU(self):
-        # Comme le gyro recupere et stock les 3 acceleration de l'accelerometre
-        # On peut lire les 3 vitesse angulaire et les 3 axcel en lisant les 12 registre qui sont comme suivit :
-        # x_gyro 15-8 bit, x_gyro 7-0,
-        # y_gyro 15-8 bit, y_gyro 7-0,
-        # z_gyro 15-8 bit, z_gyro 7-0,
-        # x_accel 15-8 bit, x_accel 7-0,
-        # y_accel 15-8 bit, y_accel 7-0,
-        # z_accel 15-8 bit, z_accel 7-0
-        self.b = self.bus.read_i2c_block_data(self.GYRO, 0x1D, 12)
-        
-        x_gyro = self.gyro_cal(self.b[0], self.b[1], self.offset[0])
-        y_gyro = - self.gyro_cal(self.b[2], self.b[3], self.offset[1])
-        z_gyro = self.gyro_cal(self.b[4], self.b[5], self.offset[2])
-
-        y_accel = self.accel_cal(self.b[7],self.b[6])
-        x_accel = self.accel_cal(self.b[9],self.b[8])
-        z_accel = self.accel_cal(self.b[11],self.b[10])
-
-        
-        print ('x_gyro = '+ str(x_gyro))
-        print ('y_gyro = '+ str(y_gyro))
-        print ('z_gyro = '+ str(z_gyro))
-        print ('x_accel = '+ str(x_accel))
-        print ('y_accel = '+ str(y_accel))
-        print ('z_accel = '+ str(z_accel))
-
-        message = Imu()
-        message.header.stamp = rospy.Time.now()
-        message.header.frame_id = "odom"
-        message.linear_acceleration = Vector3(x_accel, y_accel, z_accel)
-        message.angular_velocity = Vector3(x_gyro, y_gyro, z_gyro)
-        self.imu_publisher.publish(message)
-        #attente 1 seconde
-        time.sleep(0.01)
-
-imu = IMU()
-imu.setupIMU()
-while 1:
-    imu.runIMU()
+while True:
+    data = sensor.getMotion6()
+    gyro = {
+        'x' : data[0] / 262.4 * math.pi / 180,
+        'y' : data[1] / 262.4 * math.pi / 180,
+        'z' : data[2] / 262.4 * math.pi / 180,
+    }
+    accel = {
+        'x' : data[3] / 16383 * 9.81,
+        'y' : data[4] / 16383 * 9.81,
+        'z' : data[5] / 16383 * 9.81
+    }
+    print(gyro)
+    print(accel)
+    message = Imu()
+    message.header.stamp = rospy.Time.now()
+    message.header.frame_id = "odom"
+    message.child_frame_id = "base_link"
+    message.linear_acceleration = Vector3(x_accel, y_accel, z_accel)
+    message.angular_velocity = Vector3(x_gyro, y_gyro, z_gyro)
+    self.imu_publisher.publish(message)
+            #attente 1 seconde
+    sleep(0.1)

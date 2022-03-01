@@ -57,7 +57,7 @@ class ClientSocket(Thread):
         Thread.__init__(self)
 
     def run(self):
-        self.__client.connect(('192.168.25.11', 32233))
+        self.__client.connect(('127.0.0.1', 32233))
         print("démarrage du client")
         while True:
             response = self.__client.recv(1024)
@@ -69,7 +69,7 @@ class ClientSocket(Thread):
         self.__client.send(json.dumps( objMsg ).encode('utf8'))
         time.sleep(0.05)
 
-    def run(self):
+    """def run(self):
         self.__client.connect(('192.168.23.11', 32233))
         print("démarrage du client")
         while True:
@@ -80,7 +80,7 @@ class ClientSocket(Thread):
 		
     def sendMsg(self, objMsg):
         self.__client.send(json.dumps( objMsg ).encode('utf8'))
-        time.sleep(0.05)
+        time.sleep(0.05)"""
     def onReceive(self, callback):
         self.__callbacks.append(callback)
     def onReceive(self, callback):

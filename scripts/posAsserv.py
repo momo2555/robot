@@ -15,11 +15,12 @@ class posAsserv(Thread):
         self.__cons = [0, 0, 0]
         self.__pos = [0, 0, 0]
         self.__velCons = [0, 0]
-        self.__precision = 0.01
-        self.__k1 = 1
-        self.__k2 = 1
-        self.__vmax = 0.5
-        self.__wmax = 0.01
+        self.__precision = 0.16
+        self.__k1 = 0.48
+        self.__k2 = 3 
+        self.__vmax = 0.3
+        self.__wmax = 1
+        self.__go = False
         pass
     def setPos(self, posOdom):
         x = posOdom.pose.pose.position.x
@@ -33,36 +34,57 @@ class posAsserv(Thread):
     def setCons(self, x, y, th):
         self.__cons = [x, y, th]
         print("set postion consigne (" + str(x) + ";" + str(y) + ';' + str(th) + ')')
+        
+        consignToSend = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+        consPub.publish(consignToSend)
+        time.sleep(1)
+        self.__go = True
 
 
     def run(self):
-        print('start')
+        print('start the thread')
+        
+        
         while(True):
-            dx = self.__cons[0] - self.__pos[0]
-            dy = self.__cons[1] - self.__pos[1]
-            if (math.sqrt(dx**2 + dy**2) > self.__precision):
-                theta = self.__pos[2]
-                delta = math.atan2(dy, dx) - theta
+            if(self.__go):
+                dx = self.__cons[0] - self.__pos[0]
+                dy = self.__cons[1] - self.__pos[1]
+                if (math.sqrt(dx**2 + dy**2) > self.__precision):
+                    theta = self.__pos[2]
+                    delta = math.atan2(dy, dx) - theta 
+                    
+                
 
-                consv = self.__k1 * math.cos(theta)
-                if consv > self.__vmax:
-                    consv = self.__vmax
-                if consv < -self.__vmax:
-                    consv = -self.__vmax
-                consw = self.__k2 * theta
-                if consw > self.__wmax:
-                    consw = self.__wmax
-                if consw < -self.__wmax:
-                    consw = -self.__wmax
+                    consv = self.__k1 * math.cos(delta) 
+                    consw = self.__k2 * delta
+                    print("delta=",delta,"theta=",theta,"consw=",consw)
+                    #print('v = ', consv)
+                    #print('w = ', consw)
+                    #print('x=', self.__pos[0], ';y=', self.__pos[1])
+                    if consv > self.__vmax:
+                        consv = self.__vmax
+                    if consv < -self.__vmax:
+                        consv = -self.__vmax
+               
+                    if consw > self.__wmax:
+                        consw = self.__wmax
+                    if consw < -self.__wmax:
+                        consw = -self.__wmax
+                
 
-                consignToSend = Twist(Vector3(consv,0 , 0), Vector3(consw, 0, 2))
-                consPub.publish(consignToSend)
+                    consignToSend = Twist(Vector3(consv,0 , 0), Vector3(consw, 0, 2))
+                    consPub.publish(consignToSend)
 
 
-                time.sleep(0.1)
-            else:
-                print("fin")
-                pass
+                    time.sleep(0.06)
+                else:
+                    print("fin") 
+                    consignToSend = Twist(Vector3(0,0 , 0), Vector3(0, 0, 2))
+                    time.sleep(1.5)
+                    consignToSend = Twist(Vector3(0,0 , 0), Vector3(0, 0, 0))
+                    consPub.publish(consignToSend)
+                    self.__go = False
+                    pass
         pass
 
 def beginAsserv(req):
@@ -73,13 +95,15 @@ def beginAsserv(req):
             y = float(data["y"])
             th = float(data["th"])
             asserv.setCons(x, y, th)
-            asserv.start()
+            
             pass
     pass
-asserv = posAsserv()
+
 rospy.init_node("pos_asserv")
 
 consPub = rospy.Publisher('robot_consign', Twist, queue_size=10)
+asserv = posAsserv()
+asserv.start()
 rospy.Subscriber("server_req", String, beginAsserv)
 rospy.Subscriber("enc_velocity", Odometry, asserv.setPos)
 rospy.spin()

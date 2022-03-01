@@ -5,17 +5,20 @@
     <param name="motor_controller_port" value="/dev/ttyACM0" />
   </node>
    <!-- Execution du noeud qui calcul réccupère les données de la centrale inertielle -->
-  <node pkg="robot" name="get_imu" type="imu.py">
-  </node>
+  
   <!-- Execution du noeud qui calcul la vitesse instantanée des encodeurs -->
   <node pkg="robot" name="speed_computing" type="kalman.py" output="screen">
   </node>
 
 
   
-  <!-- lancer rviz -->
+  <!-- lancer rviz 
   <node pkg="rviz" name="rviz_screen" type="rviz" args="-d $(find robot)/rviz/robot_pos.rviz">
   </node>
+  <node pkg="robot" name="get_imu" type="imu.py" output="screen">
+  </node>
+  -->
+  
   <!-- Execution du serveur TCP 
   <node pkg="robot" name="val_server" type="valServer.py">
   </node>-->
@@ -49,11 +52,11 @@
     <param name="imu0_relative" value="false" /> 
     <param name="imu0_queue_size" value="10" />
     <param name="imu0_remove_gravitational_acceleration" value="true" />
-    <rosparam param="odom0_config">[false,  false, false,
+    <rosparam param="imu0_config">[false,  false, false,
                                     false, false, false,
                                     false, false, false,
                                     false, false, true,
-                                    true, true, false ]</rosparam>
+                                    true, false, false ]</rosparam>
     
 
 

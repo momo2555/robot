@@ -21,7 +21,7 @@ class Sonar():
 
     def __init__(self):
         self.serial = serial.Serial(port='/dev/ttyUSB0',baudrate = 115200);
-        self.stream=open("/home/loic/catkin_ws/src/sonar/config/sonar_config.yaml",'r'); #TODO : Change path
+        self.stream=open("/home/momo/valrob/src/robot/config/sonar_config.yaml",'r'); #TODO : Change path
         self.data=yaml.load(self.stream);
         self.sonarPos=self.data.items();
 
@@ -36,7 +36,7 @@ class Sonar():
     def initRos(self):
         rospy.init_node('talker', anonymous=True);
 
-    def transform(d,x,y,th) :
+    def transform(self,d,x,y,th) :
         X=np.array(
             [[d/1000],
             [0],[0]])
@@ -50,7 +50,7 @@ class Sonar():
         Y=np.dot(R,X+B)
         return list(Y)
 
-    def processReceivedData(sonarData):
+    def processReceivedData(self, sonarData):
         distanceList=sonarData.split('; ')
         distanceList=[float(i) for i in distanceList]
         return distanceList

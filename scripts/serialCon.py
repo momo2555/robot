@@ -72,6 +72,8 @@ class setPosConsignThread(Thread):
             gcode = "G11 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.linear.y)
         elif cons.angular.z == 2:
             gcode = "G10 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.angular.x)
+        elif cons.angular.z == 3:
+            gcode = "G13 I{0:.2f} J{1:.2f} \n".format(cons.linear.x, cons.angular.x)
         self.__serial.sendGcode(gcode)        
        
 
@@ -103,9 +105,10 @@ class requestMotorThread(Thread):
                     gcode = "M323 I{0:.3f} J{1:.3f} \n".format(req["l"], req["r"])
                 elif(req["request"] == "set_measure_k"):
                     gcode = "M324 I{0:.3f} J{1:.3f} \n".format(req["l"], req["r"])
+                self.__serial.sendGcode("M400 \n")     
             self.__serial.sendGcode(gcode)  
             #enregistrement
-            self.__serial.sendGcode("M400 \n")     
+            
         except Exception:
             pass
 
@@ -155,7 +158,7 @@ class MotSerial(serial.Serial):
         return sr
         pass
 
-serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM1")
+serialName = rospy.get_param("motor_controller_port", "/dev/ttyACM0")
 
 print(serial.__file__)
 ser = MotSerial(serialName)
