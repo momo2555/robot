@@ -89,7 +89,7 @@ class requestMotorThread(Thread):
         rospy.spin()
 
     def sendReq(self, req):
-        
+         
         #conversion en objet
         try:
             req = json.loads(req.data)
